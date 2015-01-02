@@ -21,15 +21,23 @@ GLOBALS.b = 10.
 """ non-linear system """
 """ linear after a "Rosenbrock transformation" """
 
+def XYtoU(x,y) :
+    return GLOBALS.a - x
+  
+def XYtoV(x,y) :
+    return GLOBALS.b * ( y - np.power(x,2.) )
+
 def XYtoUV(x,y) :
-    u = GLOBALS.a - x
-    v = GLOBALS.b * ( y - np.power(x,2.) )
-    return u,v
+    return XYtoU(x,y), XYtoV(x,y)
+
+def UVtoX(u,v) :
+    return GLOBALS.a - u
+
+def UVtoY(u,v) :
+    return v / GLOBALS.b + np.power( GLOBALS.a - u, 2.)
 
 def UVtoXY(u,v) :
-    x = GLOBALS.a - u
-    y = v / GLOBALS.b + np.power( GLOBALS.a - u, 2.)
-    return x,y
+    return UVtoX(u,v), UVtoY(u,v)
 
 #points = [ np.random.rand(2) for k in range(10) ]
 #same_points = [ UVtoXY( *XYtoUV( *p ) ) for p in points ]
@@ -131,6 +139,8 @@ if __name__ == '__main__' :
 
     
     """ show trajectory on Lyapunov function """
+    UVres = 100
+    
     # get window from the trajectory
     umin = min(traju)
     umax = max(traju)
@@ -138,8 +148,8 @@ if __name__ == '__main__' :
     vmax = max(trajv)
     urad = max(-umin,umax)
     vrad = max(-vmin,vmax)
-    us = np.linspace(-urad,urad,100)
-    vs = np.linspace(-vrad,vrad,100)
+    us = np.linspace(-urad,urad,UVres)
+    vs = np.linspace(-vrad,vrad,UVres)
     U, V = np.meshgrid(us,vs)
     
     Pot = VectorizedLyap(U,V)
@@ -154,9 +164,39 @@ if __name__ == '__main__' :
     plt.figure()
     plt.plot(ts, trajPot)
     
+
     
+    
+    """ show trajectories of non-linear system """ 
+    XYtraj = [ UVtoXY( *p ) for p in traj ]
+    trajx = [ x for x,y in XYtraj ]
+    trajy = [ y for x,y in XYtraj ]
+    xmin = min(trajx)
+    xmax = max(trajx)
+    ymin = min(trajy)
+    ymax = max(trajy)
+    xrad = max(-xmin,xmax)
+    yrad = max(-ymin,ymax)
+    
+    XYres = 100
+    xs = np.linspace(-xrad,xrad,XYres)
+    ys = np.linspace(-yrad,yrad,XYres)
+    X,Y = np.meshgrid(xs,ys)
+    
+    VectorXYtoU = np.vectorize(XYtoU)
+    VectorXYtoV = np.vectorize(XYtoV)
+    
+    Uxy = VectorXYtoU(X,Y)
+    Vxy = VectorXYtoV(X,Y)
+    
+    PotXY = VectorizedLyap(Uxy,Vxy)
+    ax = get_axes3d()
+    ax.plot_surface(X,Y,PotXY)
+    
+    trajPotXY = [ LyapunovFunction( *XYtoUV( *xx ) ) for xx in XYtraj ]
+
+    ax.plot(trajx,trajy, trajPot, c='r' )
+    ax.plot(trajx,trajy, trajPotXY, c='g' ) # these should be the SAME CURVE!
+
     plt.show()
-    
-    
-    
     

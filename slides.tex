@@ -1,0 +1,453 @@
+\documentclass[12pt]{beamer}
+\usetheme{Rochester}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{makecmds}
+
+\author{Kyle Treleaven}
+\title{State-space, Equilibria, and Stability in the sense of Lyapunov}
+%\setbeamercovered{transparent} 
+%\setbeamertemplate{navigation symbols}{} 
+%\logo{} 
+%\institute{} 
+%\date{} 
+%\subject{} 
+
+\usefonttheme[onlymath]{serif}
+
+% typesetting
+\makecommand{\vitem}{\vfill\item}
+
+% general math
+\makecommand{\reals}{{\mathbb R}}
+\makecommand{\timederiv}{\frac{d}{dt}}
+\makecommand{\onehalf}{\frac{1}{2}}
+
+% specific math
+\makecommand{\zerovec}{{\bf 0}}
+
+\makecommand{\vecu}{{\bf u}}
+\makecommand{\vecx}{{\bf x}}
+\makecommand{\matA}{{\bf A}}
+\makecommand{\matC}{{\bf C}}
+\makecommand{\vectheta}{{\boldsymbol\theta}}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+
+\end{frame}
+
+%\begin{frame}
+%\tableofcontents
+%\end{frame}
+
+
+\begin{frame}
+\frametitle{State-space Philosophy}
+
+(put the Wikipedia quote?)
+
+\begin{itemize}
+\vitem We begin observing a signal, or ``trajectory'',
+\[
+y(t) \in \reals.
+\]
+
+\vitem We call the present moment $t=0$, and are interested in $y(t)$ over $t \geq 0$ (future).
+
+%\vitem Many trajectories are possible, but there are ``dynamical constraints''.
+
+\vitem Goal is to find another signal $\vecx(t) \in \reals^d$ (perhaps more complicated), and functions $f : \reals^d \to \reals^d$ and $g : \reals^d \to \reals$, so that:
+
+\begin{enumerate}
+\vitem The system
+\[
+\begin{cases}
+	\dot x = f(x) \\
+	x(0) = x_0
+\end{cases}
+\]
+has a unique solution over $t \geq 0$;
+
+In other words, knowing the state at a particular moment in time is sufficient to simulate the entire trajectory.
+
+\vitem $y(t) = g( x(t) )$ over $t \geq 0$;
+
+In other words, applying $g$ to the state-trajectory recovers the desired signal.
+
+\vitem Every possible trajectory can be recovered using some \emph{initial condition} $x_0$.
+
+\end{enumerate}
+
+
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Review of Last Time: Second-order State-space Model}
+
+(paste a spring-mass-damper image here)
+
+\begin{block}{Second-order, Linear Dynamical System}
+$u(t)$ describes the position of a mass over time.
+
+Known to obey the law:
+$m \ddot u = -k u - c \dot u
+	\implies\qquad
+	\ddot u = -(k/m) u - (c/m) \dot u$,
+	
+where $\dot u = \timederiv u(t)$ (velocity), $\ddot u = \frac{d^2}{dt^2} u(t)$ (acceleration).
+\end{block}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\begin{block}{State-space Model}
+Write
+$\vecu(t) = \left( u(t), \dot u(t) \right)^T$;
+also written, 
+$\vecu = \begin{pmatrix} u \\ \dot u \end{pmatrix}$.
+
+(Element-wise derivative)
+
+$\dot\vecu
+	\doteq \timederiv \vecu(t)
+	= ( \timederiv u(t), \timederiv \dot u(t) )^T
+	= \begin{pmatrix}
+		\dot u \\
+		\ddot u
+	\end{pmatrix}$.
+
+\end{block}
+
+\begin{block}{SMD Model}
+$\dot \vecu
+	= \begin{pmatrix} \dot u \\ \ddot u \end{pmatrix}
+	= \begin{pmatrix}
+		\dot u \\
+		-(k/m) u - (c/m) \dot u
+		\end{pmatrix}$
+		
+$\dot \vecu
+	= \begin{pmatrix} \dot u \\ \ddot u \end{pmatrix}
+	= \begin{pmatrix}
+		\dot u \\
+		-(k/m) u - (c/m) \dot u
+		\end{pmatrix}
+	= \begin{pmatrix} 0 & 1 \\ -\frac{k}{m} & -\frac{c}{m} \end{pmatrix}
+	\vecu$.
+	
+\end{block}
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{itemize}
+
+\vitem
+$\matA := \begin{pmatrix} 0 & 1 \\ -\frac{k}{m} & -\frac{c}{m} \end{pmatrix}$
+
+\vitem
+Then $\dot\vecu$ is given by $f(\vecu) = \matA \vecu$
+
+\vitem $\matC := \begin{pmatrix} 1 & 0 \end{pmatrix}$
+
+\vitem
+Then $u(t)$ is given by
+$g(\vecu) = \matC \vecu$.
+
+\end{itemize}
+\vfill\null
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Solution}
+
+\begin{itemize}
+
+\vitem Admits a unique state-space trajectory determined by initial conditions $\vecu(0) = \vecu_0$
+\[
+  \vecu(t) = \vecu_0 e^{t \matA }
+  \qquad t \geq 0.
+\]
+
+\vitem Particle trajectory is given by $u(t) = \matC \vecu(t)$ for $t \geq 0$.
+
+\end{itemize}
+\vfill\null
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Equilibria}
+
+\begin{itemize}
+
+\vitem \emph{Equilibria} are conditions such that the system ``stays put''.
+
+\vitem Given a state-space $X$, the equilibria are 
+\[
+\left\{
+	\vecx : \ f(\vecx) = \zerovec \implies \dot \vecx = \zerovec
+\right\}
+\]
+
+\vitem In our example:
+\[
+f(\vecx) = \zerovec \implies
+\begin{cases}
+	\dot u = 0	\\
+	\ddot u = -(k/m) u - (c/m) \dot u = 0
+\end{cases}
+\]
+
+\vitem If $k > 0$, equilibrium of $u = 0$ and $\dot u = 0$ is \emph{unique}.
+
+\vitem If $k = 0$, all $u$ are equilibria when $\dot u = 0$.
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+
+Put ``state-space'' locus plots of equilibria in the two cases.
+
+\end{frame}
+
+
+
+\begin{frame}
+
+(Put a picture)
+
+Pendulum trajectories satisfy
+
+$\ddot\theta + \frac{g}{l} \sin \theta = 0$.
+
+Use angle and angular velocity as a state-space.
+
+$\vectheta = (\theta, \dot \theta)^T$
+
+$f(\vectheta)
+	= \begin{pmatrix}
+		\dot\theta \\
+		-\frac{g}{l} \sin\theta
+	\end{pmatrix}$.
+	
+$g > 0$ (thanks, universe).
+
+\[
+\begin{cases}
+\dot\theta = 0 \\
+\sin \theta = 0
+\end{cases}
+\]
+
+Two distinct equilibria:
+
+$\dot\theta = 0$ and 1) $\theta=0$, 2) $\theta=\pi$.
+
+(put pictures)
+
+Remark: There is an ``instability'' theory, but here only focus on proving an equilbrium \emph{is} stable.
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Stability}
+
+In general, stability is a property of EQUILIBRIA, \emph{not} systems!
+
+Stability of ``systems'' is a colloquialism which arose because of the behavior of linear systems;
+they tend to have unique equilibrium at origin.
+
+But, for example, it doesn't make any sense to ask is the pendulum stable.
+
+\begin{block}{Types of Stability}
+Lyapunov,
+Asymptotic
+Exponential
+\end{block}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Lyapunov's Second (``Direct'') Method}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Pendulum Example}
+
+\[
+E = mgh + \onehalf m v^2.
+\]
+
+$h = l(1-\cos\theta)$
+
+$v = (l\dot\theta)^2$
+
+\[
+E
+%ml \, g(1-\cos\theta) + \onehalf ml^2 \, \dot\theta^2
+	= ml \left( g \, (1-\cos\theta) + \onehalf l \, \dot\theta^2 \right)
+\]
+
+\[
+E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
+\]
+
+(plot the surface, show positive definite!)
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Pendulum Example}
+\[
+\frac{\partial}{\partial\theta} E' = g \sin \theta
+\]
+
+\[
+\frac{\partial}{\partial\dot\theta} E' = l \dot\theta
+\]
+
+\[
+\dot E' =
+	\frac{\partial}{\partial\theta} E' 
+		\times f_{\theta}(\vectheta)
+	+ \frac{\partial}{\partial\dot\theta} E'
+		\times f_{\dot\theta}(\vectheta)
+\]
+
+
+\[
+\dot E' =
+	\left( g \sin\theta \times \dot\theta \right)
+	+ \left( l \dot\theta \times (-g/l) \sin \theta \right) = 0
+\]
+
+(This is something we expected, being familiar with physics and conservation of total energy.)
+
+Proof that the bottom equilibrium is \emph{marginally} stable i.s.L.
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Stability for LTI Systems (Continuous)}
+$\dot x = Ax$
+
+The notation $P > 0$ means that matrix P is positive definite.
+Given any $Q > 0$, there exists a unique $P > 0$ satisfying 
+$A^T P + P A + Q = 0$ if and only if the origin is the globally asymptotically stable equilibrium of the linear system $\dot x = A x$.
+
+If and only if $\lambda \in eig(A) => Re(\lambda) < 0$
+
+The quadratic function $V(z) = z^T P z$ is a Lyapunov function that can verify stability.
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Pathologies}
+
+Examples: globally attractive equilibrium, not stable, even i.s.L. (weakest sense)
+
+also, "radial unboundedness" ("escape")
+
+\end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Remarks}
+
+There is an instability theory
+
+Lyapunov's Indirect Method (Linearization)
+
+Similar theories for discrete systems (e.g., computer programs)
+
+\end{frame}
+
+
+
+
+\begin{frame}{Review of Second-order State-space Model (from last time)}
+
+\begin{equation}
+V = b \left( y - x^{2}\right)
+	\left(
+		-\onehalf a + \frac{b}{2c} \left(k + m\right) \left(- x^{2}{\left (t \right )} + y{\left (t \right )}\right) + 0.5 x{\left (t \right )}\right)
+		+ \left(a - x{\left (t \right )}\right) \left(- 0.5 b \left(- x^{2}{\left (t \right )} + y{\left (t \right )}\right) + \frac{0.5}{c k} \left(a - x{\left (t \right )}\right) \left(c^{2} + k m + m^{2}\right)\right)
+\end{equation}
+
+\begin{equation}
+\dot V = -b^2 \left( y - x^2 \right) - \left( a - x \right)^2
+\end{equation}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}\end{frame}
+\begin{frame}\end{frame}
+\begin{frame}\end{frame}
+\begin{frame}\end{frame}
+
+
+
+
+
+\end{document}

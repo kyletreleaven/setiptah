@@ -8,7 +8,7 @@
 \usepackage{makecmds}
 
 \author{Kyle Treleaven}
-\title{State-space, Equilibria, and Stability in the sense of Lyapunov}
+\title{State-space, Equilibria, and Stability and Lyapunov Methods I}
 %\setbeamercovered{transparent} 
 %\setbeamertemplate{navigation symbols}{} 
 %\logo{} 
@@ -25,6 +25,7 @@
 \makecommand{\reals}{{\mathbb R}}
 \makecommand{\timederiv}{\frac{d}{dt}}
 \makecommand{\onehalf}{\frac{1}{2}}
+\makecommand{\xpose}{{\rm T}}
 
 % specific math
 \makecommand{\zerovec}{{\bf 0}}
@@ -50,7 +51,49 @@
 \begin{frame}
 \frametitle{State-space Philosophy}
 
+\begin{block}{Problem}
+Many possible trajectories from a particular location, of a bouncing ball under gravity.
+\end{block}
+
+
+\end{frame}
+
+
+\begin{frame}
+
+\begin{itemize}
+
+\vitem Clearly, position is not all the information that is needed to determine trajectory.
+
+\vitem But clearly, the ball couldn't just do anything, and only certain kinds of trajectories are possible.
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\begin{itemize}
+\vitem Associating a ``velocity'' with the ball gives enough information to predict the trajectory exactly.
+
+\vitem So the combination of position and velocity is some essential unit information we call state.
+
+\vitem In other words, knowing the state at a particular moment in time is sufficient to simulate the entire trajectory.
+
+\vitem Every possible trajectory can be recovered using some \emph{initial condition} $x_0$.
+\end{itemize}
+
 (put the Wikipedia quote?)
+
+\vfill\null
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{A formalism for real-valued signals}
 
 \begin{itemize}
 \vitem We begin observing a signal, or ``trajectory'',
@@ -62,7 +105,7 @@ y(t) \in \reals.
 
 %\vitem Many trajectories are possible, but there are ``dynamical constraints''.
 
-\vitem Goal is to find another signal $\vecx(t) \in \reals^d$ (perhaps more complicated), and functions $f : \reals^d \to \reals^d$ and $g : \reals^d \to \reals$, so that:
+\vitem Substitute another signal $\vecx(t) \in \reals^d$ (perhaps more complicated), and functions $f : \reals^d \to \reals^d$ and $g : \reals^d \to \reals$, so that:
 
 \begin{enumerate}
 \vitem The system
@@ -74,16 +117,11 @@ y(t) \in \reals.
 \]
 has a unique solution over $t \geq 0$;
 
-In other words, knowing the state at a particular moment in time is sufficient to simulate the entire trajectory.
-
 \vitem $y(t) = g( x(t) )$ over $t \geq 0$;
 
-In other words, applying $g$ to the state-trajectory recovers the desired signal.
-
-\vitem Every possible trajectory can be recovered using some \emph{initial condition} $x_0$.
+%In other words, applying $g$ to the state-trajectory recovers the desired signal.
 
 \end{enumerate}
-
 
 \end{itemize}
 
@@ -92,10 +130,15 @@ In other words, applying $g$ to the state-trajectory recovers the desired signal
 
 
 
+
+
+
 \begin{frame}
 \frametitle{Review of Last Time: Second-order State-space Model}
 
-(paste a spring-mass-damper image here)
+\begin{center}
+\includegraphics[width=.3\linewidth]{pic/spring-mass-damper.png}
+\end{center}
 
 \begin{block}{Second-order, Linear Dynamical System}
 $u(t)$ describes the position of a mass over time.
@@ -118,7 +161,7 @@ where $\dot u = \timederiv u(t)$ (velocity), $\ddot u = \frac{d^2}{dt^2} u(t)$ (
 \begin{frame}
 \begin{block}{State-space Model}
 Write
-$\vecu(t) = \left( u(t), \dot u(t) \right)^T$;
+$\vecu(t) = \left( u(t), \dot u(t) \right)^\xpose$;
 also written, 
 $\vecu = \begin{pmatrix} u \\ \dot u \end{pmatrix}$.
 
@@ -126,7 +169,7 @@ $\vecu = \begin{pmatrix} u \\ \dot u \end{pmatrix}$.
 
 $\dot\vecu
 	\doteq \timederiv \vecu(t)
-	= ( \timederiv u(t), \timederiv \dot u(t) )^T
+	= ( \timederiv u(t), \timederiv \dot u(t) )^\xpose
 	= \begin{pmatrix}
 		\dot u \\
 		\ddot u
@@ -241,16 +284,19 @@ Put ``state-space'' locus plots of equilibria in the two cases.
 
 
 \begin{frame}
+\frametitle{Ideal Pendulum System}
 
-(Put a picture)
+\begin{columns}
+
+\column{.45\linewidth}
 
 Pendulum trajectories satisfy
 
-$\ddot\theta + \frac{g}{l} \sin \theta = 0$.
+$\ddot\theta + (g/l) \sin \theta = 0$.
 
 Use angle and angular velocity as a state-space.
 
-$\vectheta = (\theta, \dot \theta)^T$
+$\vectheta = (\theta, \dot \theta)^\xpose$
 
 $f(\vectheta)
 	= \begin{pmatrix}
@@ -258,7 +304,7 @@ $f(\vectheta)
 		-\frac{g}{l} \sin\theta
 	\end{pmatrix}$.
 	
-$g > 0$ (thanks, universe).
+$g > 0$ (thanks, universe), so:
 
 \[
 \begin{cases}
@@ -267,13 +313,26 @@ $g > 0$ (thanks, universe).
 \end{cases}
 \]
 
+\column{.45\linewidth}
+
+\begin{center}
+\includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
+\end{center}
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+
 Two distinct equilibria:
 
 $\dot\theta = 0$ and 1) $\theta=0$, 2) $\theta=\pi$.
 
 (put pictures)
 
-Remark: There is an ``instability'' theory, but here only focus on proving an equilbrium \emph{is} stable.
+But we have a gut feeling that one of these equilibria is not ``stable''.
 
 \end{frame}
 
@@ -287,16 +346,38 @@ In general, stability is a property of EQUILIBRIA, \emph{not} systems!
 Stability of ``systems'' is a colloquialism which arose because of the behavior of linear systems;
 they tend to have unique equilibrium at origin.
 
-But, for example, it doesn't make any sense to ask is the pendulum stable.
+But, for example, it doesn't make any sense to ask ``is the pendulum stable''.
 
-\begin{block}{Types of Stability}
-Lyapunov,
-Asymptotic
-Exponential
+\end{frame}
+
+
+
+\begin{frame}
+
+\begin{block}{Informal}
+If I put it in that state, and then I go make a sandwich, will it be like that when I get back?
+\end{block}
+
+\begin{block}{Formal}
+Define Lyapunov stability.
 \end{block}
 
 \end{frame}
 
+
+
+\begin{frame}
+\frametitle{Other types of stability}
+
+\begin{block}{Types of Stability}
+Asymptotic,
+Exponential
+\end{block}
+
+Remark: There is an ``instability'' theory, but here only focus on proving an equilbrium \emph{is} stable.
+
+
+\end{frame}
 
 
 
@@ -308,6 +389,8 @@ Exponential
 
 \begin{frame}
 \frametitle{Pendulum Example}
+
+(put the pendulum energy picture)
 
 \[
 E = mgh + \onehalf m v^2.
@@ -374,11 +457,11 @@ $\dot x = Ax$
 
 The notation $P > 0$ means that matrix P is positive definite.
 Given any $Q > 0$, there exists a unique $P > 0$ satisfying 
-$A^T P + P A + Q = 0$ if and only if the origin is the globally asymptotically stable equilibrium of the linear system $\dot x = A x$.
+$A^\xpose P + P A + Q = 0$ if and only if the origin is the globally asymptotically stable equilibrium of the linear system $\dot x = A x$.
 
 If and only if $\lambda \in eig(A) => Re(\lambda) < 0$
 
-The quadratic function $V(z) = z^T P z$ is a Lyapunov function that can verify stability.
+The quadratic function $V(z) = z^\xpose P z$ is a Lyapunov function that can verify stability.
 
 \end{frame}
 
@@ -405,9 +488,29 @@ also, "radial unboundedness" ("escape")
 
 There is an instability theory
 
-Lyapunov's Indirect Method (Linearization)
 
 Similar theories for discrete systems (e.g., computer programs)
+
+\end{frame}
+
+
+
+\makecommand{\matJ}{{\bf J}}
+
+\begin{frame}
+\frametitle{Lyapunov's Indirect Method (Linearization)}
+
+Given $\dot \vecx = f(\vecx)$ and equilibrium $\vecx_e$,
+form system
+
+$\tilde\vecx = \vecx - \vecx_e$
+
+$\dot{\tilde\vecx}
+	= \left.
+		\frac{\partial f }{\partial\vecx} \right|_{\vecx=\vecx_e}
+		\, \tilde\vecx$.
+
+(Use this one against the pendulum inverted equilibrium?)
 
 \end{frame}
 

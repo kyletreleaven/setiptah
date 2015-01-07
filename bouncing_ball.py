@@ -120,20 +120,21 @@ class BallState :
         t2 = floor_state.event_horizon(ball, physics)
         return t1 + t2
     
-    def simulate_y(self, t, ball, physics ) :
+    def last_bounce_frame(self, t, ball, physics ) :
         t1 = self.crossing_time(physics)
         #print '%f time to cross'
         
         if t < t1 :
-            return self.simulate_y_floorless(t, physics)
-
+            # no fast-forward needed
+            return BallState(self.y,self.dy), t
+        
         t23 = t - t1
         #print '%f time remaining' % t23
         
         # floor state after first bounce
         floor_state = self.bounce_floor_state(ball, physics)
         
-        if t23 >= floor_state.event_horizon(ball, physics) :
+        if t23 > floor_state.event_horizon(ball, physics) :
             raise 'beyond the Zeno point'
         
         # number of full bounces in the time *after* the first one
@@ -149,9 +150,20 @@ class BallState :
         last_state = last_floor.ball_state()
         t3 = t23 - t2
         
-        print t1, t2, t3
+        return last_state, t3
+
+
+    def simulate(self, t, ball, physics ) :
+        frame_state, tt = self.last_bounce_frame(t, ball, physics)
         
-        return last_state.simulate_y_floorless( t3, physics )
+        y = frame_state.simulate_y_floorless(tt, physics)
+        dy = frame_state.simulate_dy_floorless(tt, physics)
+        
+        return BallState(y,dy)
+        
+    def simulate_y(self, t, ball, physics ) :
+        frame_state, tt = self.last_bounce_frame(t, ball, physics)
+        return frame_state.simulate_y_floorless( tt, physics )
 
 
 
@@ -159,6 +171,14 @@ if __name__ == '__main__' :
     
     import matplotlib.pyplot as plt
     plt.close('all')
+    
+    from mpl_toolkits.mplot3d import Axes3D
+    
+    def get_axes3d() :
+        fig = plt.figure()
+        ax = fig.add_subplot(111,projection='3d')
+        return ax
+    
     
     physics = Physics()
     ball = BouncingBall( .8 )
@@ -185,6 +205,29 @@ if __name__ == '__main__' :
         ys = get_y(ts)
         #ys = np.array([ x.simulate_y(t,ball,physics) for t in ts])
         plt.plot(ts,ys)
+        
+        trajectories = []
+        ys = np.linspace(0.001,1,5)
+        dys = np.linspace(-1.,1.,5)
+        
+        for y in ys :
+            for dy in dys :
+                x = BallState(y,dy)
+                get_traj = np.vectorize( lambda t : x.simulate(t, ball, physics) )
+                
+                tf = x.event_horizon(ball, physics)
+                ts = np.linspace(0,tf,100+1)[:-1]
+                xs = get_traj(ts)
+                
+                trajectories.append( ( ts, xs ) )
+                
+        ax = get_axes3d()
+        for ts, xs in trajectories :
+            ys = [ x.y for x in xs ]
+            dys = [ x.dy for x in xs ]
+            
+            ax.plot(ys,dys, zs=ts)
+            
     
     
     

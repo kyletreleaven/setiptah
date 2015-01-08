@@ -6,6 +6,10 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 \usepackage{makecmds}
+\usepackage{movie15}
+
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
 
 \author{Kyle Treleaven}
 \title{State-space, Equilibria, and Stability and Lyapunov Methods I}
@@ -26,6 +30,7 @@
 \makecommand{\timederiv}{\frac{d}{dt}}
 \makecommand{\onehalf}{\frac{1}{2}}
 \makecommand{\xpose}{{\rm T}}
+\makecommand{\vecnorm}[1]{\left\|#1\right\|}
 
 % specific math
 \makecommand{\zerovec}{{\bf 0}}
@@ -50,6 +55,8 @@
 
 \begin{frame}
 \frametitle{State-space Philosophy}
+
+(1. Draw many possible trajectories of a bouncing ball)
 
 \begin{block}{Problem}
 Many possible trajectories from a particular location, of a bouncing ball under gravity.
@@ -89,6 +96,16 @@ Many possible trajectories from a particular location, of a bouncing ball under 
 \vfill\null
 
 \end{frame}
+
+
+
+
+\begin{frame}
+
+(2. Draw trajectories originating from initial conditions in a state space.)
+
+\end{frame}
+
 
 
 
@@ -138,7 +155,382 @@ Continuous dynamics: $\ddot x = -g$
 ``Jump'' dynamics: Whenever $x = 0$ and $\dot x < 0$, then
 $x^+ = x$, $\dot x^+ = -\gamma \dot x$.
 
+(Put solution equations?)
+
+(3. Could annotate a trajectory in state-time space)
+
+
+
 \end{frame}
+
+
+
+\begin{frame}
+\frametitle{Equilibria}
+
+\begin{itemize}
+
+\vitem \emph{Equilibria} are conditions such that the system ``stays put''.
+
+\vitem Given a state-space $X$, the equilibria are 
+\[
+\left\{
+	\vecx : \ f(\vecx) = \zerovec \implies \dot \vecx = \zerovec
+\right\}
+\]
+
+\vitem In our example:
+\[
+f(\vecx) = \zerovec \implies
+\begin{cases}
+	\dot u = 0	\\
+	\ddot u = -(k/m) u - (c/m) \dot u = 0
+\end{cases}
+\]
+
+\vitem If $k > 0$, equilibrium of $u = 0$ and $\dot u = 0$ is \emph{unique}.
+
+\vitem If $k = 0$, all $u$ are equilibria when $\dot u = 0$.
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+Equilibrium for the bouncing ball?
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Ideal Pendulum System}
+
+\begin{columns}
+
+\column{.45\linewidth}
+
+Pendulum trajectories satisfy
+
+$\ddot\theta + (g/l) \sin \theta = 0$.
+
+Use angle and angular velocity as a state-space.
+
+$\vectheta = (\theta, \dot \theta)^\xpose$
+
+$f(\vectheta)
+	= \begin{pmatrix}
+		\dot\theta \\
+		-\frac{g}{l} \sin\theta
+	\end{pmatrix}$.
+	
+$g > 0$ (thanks, universe), so:
+
+\[
+\begin{cases}
+\dot\theta = 0 \\
+\sin \theta = 0
+\end{cases}
+\]
+
+\column{.45\linewidth}
+
+\begin{center}
+\includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
+\end{center}
+
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Equilibria of the Pendulum}
+
+Two [physically] distinct equilibria:
+
+\begin{columns}
+
+\column{.45\linewidth}
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{pic/Pendulum_0deg.png}
+
+$\dot\theta = 0$, $\theta=0$
+
+\end{center}
+
+
+\column{.45\linewidth}
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{pic/Pendulum_180deg.png}
+
+$\dot\theta = 0$, $\theta=\pi$
+\end{center}
+
+
+\end{columns}
+
+\vfill
+But we have a gut feeling that one of these equilibria is not ``stable''.
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Stability}
+
+\begin{itemize}
+
+\vitem Stability is a property of \emph{equilibria}, \emph{not} systems!
+
+\vitem Stability of ``systems'' is a colloquialism which arose because of the importance of \emph{linear} systems;
+
+\vitem Linear systems tend to have unique equilibrium (at origin).
+
+\vitem But, it doesn't make any sense to ask \emph{``Is the pendulum stable?''}
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Lyapunov Stability}
+\vfill
+\begin{block}{Informal}
+``If I put it there, and then I go make a sandwich, will it be like that when I get back?''
+---Kyle
+\end{block}
+
+\vfill
+\begin{block}{Formal}
+An equilibrium $\bar\vecx$ is said to be \emph{stable in the sense of Lyapunov} if:
+for every $\epsilon > 0$, there is $\delta >0$, so that
+if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
+$\vecnorm{\vecx(t) - \bar\vecx} < \epsilon$. 
+\end{block}
+
+\vfill\null
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Break-down}
+
+\begin{block}{Formal}
+$\bar\vecx$ is \textbf{stable in the sense of Lyapunov} if
+\emph{for every $\epsilon > 0$}, there is $\delta >0$, so that
+$\vecnorm{\vecx(0)-\bar\vecx} < \delta
+ \implies \vecnorm{\vecx(t) - \bar\vecx} < \epsilon$. 
+\end{block}
+
+\begin{tabular}{rp{.6\linewidth}}
+$\vecnorm{\vecx(0)-\bar\vecx}$
+	& Initial distance from the equilibrium state \\ \\
+	
+$\vecnorm{\vecx(t)-\bar\vecx}$
+	& Distance from the equilibrium state at time $t$ \\ \\
+	
+$\vecnorm{\vecx(0)-\bar\vecx} < \delta$
+	& Start close; then... \\ \\
+
+$\implies \vecnorm{\vecx(t)-\bar\vecx} \leq \epsilon$
+	& Stay close (for all $t \geq 0$). \\
+
+\end{tabular}
+
+\vfill\null
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Other Properties of Equilibria}
+
+\begin{block}{Attractive}
+If there is $\delta > 0$ so that if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
+$\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
+\end{block}
+
+\begin{block}{\emph{Asymptotically} Stable}
+Stable in the sense of Lyapunov \emph{and} attractive.
+\end{block}
+
+\begin{block}{Exponentially Stable}
+If there are $\alpha, \beta, \delta >0$, so that if
+$\vecnorm{\vecx(0)-\bar{\vecx}} < \delta$, then
+$\vecnorm{\vecx(t)-\bar\vecx}
+	\leq \alpha \vecnorm{\vecx(0)-\bar\vecx} e^{-\beta t}$
+\end{block}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Pathology?}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Lyapunov's Second (``Direct'') Method}
+
+\begin{itemize}
+\vitem
+It can be challenging, tedious, or impossible
+to prove such claims about ``all trajectories'';
+even to \emph{find} them (pendulum!).
+
+\vitem
+Lyapunov's ``direct'' method can provide a short-cut.
+
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Lyapunov candidates}
+
+\begin{itemize}
+
+\vitem
+Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar function.
+
+\vitem
+$V$ is a Lyapunov candidate if is \emph{positive-definite}, i.e.,
+
+\[
+\begin{cases}
+	V(\zerovec) = 0 &\\
+	V(\vecx) > 0 & \text{for all $\vecx \neq \zerovec$}.
+\end{cases}
+\]
+
+\vitem
+May be positive definite \emph{locally}; i.e., in a ``neighborhood''
+(open set, containing $\zerovec$)
+
+\vitem
+(Assuming \emph{without loss of generality} that $\bar{\vecx} = \zerovec$.)
+
+\end{itemize}
+\vfill\null
+\end{frame}
+
+
+
+
+\begin{frame}
+
+5. Define and demonstrate continuous, [positive/negative] [semi-] definiteness.
+
+6. Define and demonstrate sub-level sets.
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Other types of stability}
+
+\begin{block}{Types of Stability}
+Asymptotic,
+Exponential
+\end{block}
+
+Remark: There is an ``instability'' theory, but here only focus on proving an equilbrium \emph{is} stable.
+
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Pendulum Example}
+
+(put the pendulum energy picture)
+
+\[
+E = mgh + \onehalf m v^2.
+\]
+
+$h = l(1-\cos\theta)$
+
+$v = (l\dot\theta)^2$
+
+\[
+E
+%ml \, g(1-\cos\theta) + \onehalf ml^2 \, \dot\theta^2
+	= ml \left( g \, (1-\cos\theta) + \onehalf l \, \dot\theta^2 \right)
+\]
+
+\[
+E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
+\]
+
+(plot the surface, show positive definite!)
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Pendulum Example}
+\[
+\frac{\partial}{\partial\theta} E' = g \sin \theta
+\]
+
+\[
+\frac{\partial}{\partial\dot\theta} E' = l \dot\theta
+\]
+
+\[
+\dot E' =
+	\frac{\partial}{\partial\theta} E' 
+		\times f_{\theta}(\vectheta)
+	+ \frac{\partial}{\partial\dot\theta} E'
+		\times f_{\dot\theta}(\vectheta)
+\]
+
+
+\[
+\dot E' =
+	\left( g \sin\theta \times \dot\theta \right)
+	+ \left( l \dot\theta \times (-g/l) \sin \theta \right) = 0
+\]
+
+(This is something we expected, being familiar with physics and conservation of total energy.)
+
+Proof that the bottom equilibrium is \emph{marginally} stable i.s.L.
+
+\end{frame}
+
+
+
+
+
+
 
 
 
@@ -253,208 +645,7 @@ $g(\vecu) = \matC \vecu$.
 
 
 \begin{frame}
-\frametitle{Equilibria}
-
-\begin{itemize}
-
-\vitem \emph{Equilibria} are conditions such that the system ``stays put''.
-
-\vitem Given a state-space $X$, the equilibria are 
-\[
-\left\{
-	\vecx : \ f(\vecx) = \zerovec \implies \dot \vecx = \zerovec
-\right\}
-\]
-
-\vitem In our example:
-\[
-f(\vecx) = \zerovec \implies
-\begin{cases}
-	\dot u = 0	\\
-	\ddot u = -(k/m) u - (c/m) \dot u = 0
-\end{cases}
-\]
-
-\vitem If $k > 0$, equilibrium of $u = 0$ and $\dot u = 0$ is \emph{unique}.
-
-\vitem If $k = 0$, all $u$ are equilibria when $\dot u = 0$.
-
-\end{itemize}
-
-\end{frame}
-
-
-
-\begin{frame}
-
 Put ``state-space'' locus plots of equilibria in the two cases.
-
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Ideal Pendulum System}
-
-\begin{columns}
-
-\column{.45\linewidth}
-
-Pendulum trajectories satisfy
-
-$\ddot\theta + (g/l) \sin \theta = 0$.
-
-Use angle and angular velocity as a state-space.
-
-$\vectheta = (\theta, \dot \theta)^\xpose$
-
-$f(\vectheta)
-	= \begin{pmatrix}
-		\dot\theta \\
-		-\frac{g}{l} \sin\theta
-	\end{pmatrix}$.
-	
-$g > 0$ (thanks, universe), so:
-
-\[
-\begin{cases}
-\dot\theta = 0 \\
-\sin \theta = 0
-\end{cases}
-\]
-
-\column{.45\linewidth}
-
-\begin{center}
-\includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
-\end{center}
-
-\end{columns}
-
-\end{frame}
-
-
-\begin{frame}
-
-Two distinct equilibria:
-
-$\dot\theta = 0$ and 1) $\theta=0$, 2) $\theta=\pi$.
-
-(put pictures)
-
-But we have a gut feeling that one of these equilibria is not ``stable''.
-
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Stability}
-
-In general, stability is a property of EQUILIBRIA, \emph{not} systems!
-
-Stability of ``systems'' is a colloquialism which arose because of the behavior of linear systems;
-they tend to have unique equilibrium at origin.
-
-But, for example, it doesn't make any sense to ask ``is the pendulum stable''.
-
-\end{frame}
-
-
-
-\begin{frame}
-
-\begin{block}{Informal}
-If I put it in that state, and then I go make a sandwich, will it be like that when I get back?
-\end{block}
-
-\begin{block}{Formal}
-Define Lyapunov stability.
-\end{block}
-
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Other types of stability}
-
-\begin{block}{Types of Stability}
-Asymptotic,
-Exponential
-\end{block}
-
-Remark: There is an ``instability'' theory, but here only focus on proving an equilbrium \emph{is} stable.
-
-
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Lyapunov's Second (``Direct'') Method}
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Pendulum Example}
-
-(put the pendulum energy picture)
-
-\[
-E = mgh + \onehalf m v^2.
-\]
-
-$h = l(1-\cos\theta)$
-
-$v = (l\dot\theta)^2$
-
-\[
-E
-%ml \, g(1-\cos\theta) + \onehalf ml^2 \, \dot\theta^2
-	= ml \left( g \, (1-\cos\theta) + \onehalf l \, \dot\theta^2 \right)
-\]
-
-\[
-E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
-\]
-
-(plot the surface, show positive definite!)
-
-\end{frame}
-
-
-
-\begin{frame}
-\frametitle{Pendulum Example}
-\[
-\frac{\partial}{\partial\theta} E' = g \sin \theta
-\]
-
-\[
-\frac{\partial}{\partial\dot\theta} E' = l \dot\theta
-\]
-
-\[
-\dot E' =
-	\frac{\partial}{\partial\theta} E' 
-		\times f_{\theta}(\vectheta)
-	+ \frac{\partial}{\partial\dot\theta} E'
-		\times f_{\dot\theta}(\vectheta)
-\]
-
-
-\[
-\dot E' =
-	\left( g \sin\theta \times \dot\theta \right)
-	+ \left( l \dot\theta \times (-g/l) \sin \theta \right) = 0
-\]
-
-(This is something we expected, being familiar with physics and conservation of total energy.)
-
-Proof that the bottom equilibrium is \emph{marginally} stable i.s.L.
-
 \end{frame}
 
 
@@ -463,6 +654,8 @@ Proof that the bottom equilibrium is \emph{marginally} stable i.s.L.
 
 \begin{frame}
 \frametitle{Stability for LTI Systems (Continuous)}
+
+
 $\dot x = Ax$
 
 The notation $P > 0$ means that matrix P is positive definite.
@@ -502,6 +695,20 @@ There is an instability theory
 Similar theories for discrete systems (e.g., computer programs)
 
 \end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}
+BACKUP
+\end{frame}
+
+
 
 
 

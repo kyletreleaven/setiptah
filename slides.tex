@@ -17,8 +17,8 @@
 %\setbeamertemplate{navigation symbols}{} 
 %\logo{} 
 %\institute{} 
-%\date{} 
-%\subject{} 
+\date{Friday, Jan.~9, 2015} 
+\subject{Lunch \& Learn} 
 
 \usefonttheme[onlymath]{serif}
 
@@ -52,6 +52,10 @@
 %\tableofcontents
 %\end{frame}
 
+
+
+
+\section{State-space}
 
 \begin{frame}
 \frametitle{State-space Philosophy}
@@ -109,6 +113,41 @@ Many possible trajectories from a particular location, of a bouncing ball under 
 
 
 
+
+\begin{frame}
+\frametitle{Bouncing Ball State-space Model}
+
+Continuous dynamics: $\ddot x = -g$
+
+``Jump'' dynamics: Whenever $x = 0$ and $\dot x < 0$, then
+$x^+ = x$, $\dot x^+ = -\gamma \dot x$.
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}
+
+(Put solution equations?)
+
+(3. Could annotate a trajectory in state-time space)
+
+\end{frame}
+
+
+
+
+
+
+
+
+
 \begin{frame}
 \frametitle{A formalism for real-valued signals}
 
@@ -147,22 +186,12 @@ has a unique solution over $t \geq 0$;
 
 
 
-\begin{frame}
-\frametitle{Bouncing Ball State-space Model}
-
-Continuous dynamics: $\ddot x = -g$
-
-``Jump'' dynamics: Whenever $x = 0$ and $\dot x < 0$, then
-$x^+ = x$, $\dot x^+ = -\gamma \dot x$.
-
-(Put solution equations?)
-
-(3. Could annotate a trajectory in state-time space)
 
 
 
-\end{frame}
 
+
+\section{Equilibria}
 
 
 \begin{frame}
@@ -179,18 +208,7 @@ $x^+ = x$, $\dot x^+ = -\gamma \dot x$.
 \right\}
 \]
 
-\vitem In our example:
-\[
-f(\vecx) = \zerovec \implies
-\begin{cases}
-	\dot u = 0	\\
-	\ddot u = -(k/m) u - (c/m) \dot u = 0
-\end{cases}
-\]
-
-\vitem If $k > 0$, equilibrium of $u = 0$ and $\dot u = 0$ is \emph{unique}.
-
-\vitem If $k = 0$, all $u$ are equilibria when $\dot u = 0$.
+\vitem Where in the wide, wide state-space will the system rest?
 
 \end{itemize}
 
@@ -245,6 +263,18 @@ $g > 0$ (thanks, universe), so:
 \end{frame}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 \begin{frame}
 \frametitle{Equilibria of the Pendulum}
 
@@ -280,6 +310,15 @@ But we have a gut feeling that one of these equilibria is not ``stable''.
 
 
 
+
+
+
+
+
+\section{Stability}
+
+\subsection{Introduction}
+
 \begin{frame}
 \frametitle{Stability}
 
@@ -298,6 +337,8 @@ But we have a gut feeling that one of these equilibria is not ``stable''.
 \end{frame}
 
 
+
+\subsection{Definition}
 
 \begin{frame}
 \frametitle{Lyapunov Stability}
@@ -386,6 +427,8 @@ $\vecnorm{\vecx(t)-\bar\vecx}
 
 
 
+\subsection{Direct Method}
+
 \begin{frame}
 \frametitle{Lyapunov's Second (``Direct'') Method}
 
@@ -451,22 +494,6 @@ May be positive definite \emph{locally}; i.e., in a ``neighborhood''
 
 
 \begin{frame}
-\frametitle{Other types of stability}
-
-\begin{block}{Types of Stability}
-Asymptotic,
-Exponential
-\end{block}
-
-Remark: There is an ``instability'' theory, but here only focus on proving an equilbrium \emph{is} stable.
-
-
-\end{frame}
-
-
-
-
-\begin{frame}
 \frametitle{Pendulum Example}
 
 (put the pendulum energy picture)
@@ -522,7 +549,7 @@ E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
 
 (This is something we expected, being familiar with physics and conservation of total energy.)
 
-Proof that the bottom equilibrium is \emph{marginally} stable i.s.L.
+Proof that the bottom equilibrium is stable i.s.L.; but \emph{not} attractive
 
 \end{frame}
 
@@ -602,6 +629,26 @@ $\dot \vecu
 
 
 \begin{frame}
+\frametitle{SMD Equilibrium}
+
+\begin{itemize}
+\vitem In our example:
+\[
+f(\vecx) = \zerovec \implies
+\begin{cases}
+	\dot u = 0	\\
+	\ddot u = -(k/m) u - (c/m) \dot u = 0
+\end{cases}
+\]
+
+\vitem If $k > 0$, equilibrium of $u = 0$ and $\dot u = 0$ is \emph{unique}.
+
+\vitem If $k = 0$, all $u$ are equilibria when $\dot u = 0$.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
 
 \begin{itemize}
 
@@ -656,6 +703,8 @@ Put ``state-space'' locus plots of equilibria in the two cases.
 \frametitle{Stability for LTI Systems (Continuous)}
 
 
+Can I find $P$ and $Q$ which are p.d., n.[s.]d simultaneously?
+
 $\dot x = Ax$
 
 The notation $P > 0$ means that matrix P is positive definite.
@@ -666,46 +715,8 @@ If and only if $\lambda \in eig(A) => Re(\lambda) < 0$
 
 The quadratic function $V(z) = z^\xpose P z$ is a Lyapunov function that can verify stability.
 
-\end{frame}
+\emph{Otherwise, unstable!}
 
-
-
-\begin{frame}
-\frametitle{Pathologies}
-
-Examples: globally attractive equilibrium, not stable, even i.s.L. (weakest sense)
-
-also, "radial unboundedness" ("escape")
-
-\end{frame}
-
-
-
-
-
-
-
-
-\begin{frame}
-\frametitle{Remarks}
-
-There is an instability theory
-
-
-Similar theories for discrete systems (e.g., computer programs)
-
-\end{frame}
-
-
-
-
-
-
-
-
-
-\begin{frame}
-BACKUP
 \end{frame}
 
 
@@ -727,14 +738,58 @@ $\dot{\tilde\vecx}
 		\frac{\partial f }{\partial\vecx} \right|_{\vecx=\vecx_e}
 		\, \tilde\vecx$.
 
-(Use this one against the pendulum inverted equilibrium?)
+
+
+$\dot V \prec 0$ means stable;
+
+$\dot V \preceq 0$ is undecided;
+
+$\dot \succ 0$, but $\dot V \neq 0$ means unstable;
+
+(Could use this one against the pendulum inverted equilibrium?)
 
 \end{frame}
 
 
 
 
-\begin{frame}{Review of Second-order State-space Model (from last time)}
+\begin{frame}
+\frametitle{Discussion}
+
+\begin{itemize}
+\vitem
+There is an instability theory
+
+\vitem
+Similar theories for discrete systems (e.g., computer programs);
+hybrid systems (bouncing ball)
+\end{itemize}
+
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}
+BACKUP
+\end{frame}
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Rosenbrock-transformed Spring-Mass-Damper}
 
 \begin{equation}
 V = b \left( y - x^{2}\right)

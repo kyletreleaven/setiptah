@@ -93,6 +93,23 @@ class BallState :
         C = -self.y
         
         return quadratic_equation(A,B,C)
+
+    def bounce_times(self, n, ball, physics) :
+        ts = np.zeros(n)
+        ts[0] = self.crossing_time(physics)
+        
+        floor_state = self.bounce_floor_state(ball, physics)
+        ts[1:] = [ ts[0] + floor_state.time_until_nth_bounce(k, ball, physics)
+                  for k in xrange(1,n) ]
+        return ts
+    
+    def full_bounces_by(self, t, ball, physics ) :
+        t1 = self.crossing_time(physics)
+        if t < t1 : return 0
+        
+        floor_state = self.bounce_floor_state(ball, physics)
+        t2 = t - t1
+        return 1 + floor_state.full_crossings_by(t2, ball, physics )
     
     def landing_velocity(self, physics ) :
         t = self.crossing_time(physics)
@@ -180,31 +197,66 @@ if __name__ == '__main__' :
     ball = BouncingBall( .8 )
 
     x = BallState(1.,0.)
+    get_y = np.vectorize( lambda t : x.simulate_y(t, ball, physics) )
     
     tf = x.event_horizon(ball, physics)
-    
-    floor_state = x.bounce_floor_state(ball, physics)
-    coeff = floor_state._characteristic_coefficient(ball, physics)
-    
     y = x.simulate_y( .5 * tf, ball, physics )
-    
-    floor_full_state = floor_state.ball_state()
-    tc = floor_state.time_until_next_bounce(physics)
-    bounce_height = floor_full_state.simulate_y_floorless(.5 * tc, physics)
-    expected_bounce_height = .5 * floor_state.dy**2 / physics.gravity_const
-    print bounce_height, expected_bounce_height
 
     
-    ts = np.linspace(0,tf,100+1)[:-1]
-    if True :
-        get_y = np.vectorize( lambda t : x.simulate_y(t, ball, physics) )
-        ys = get_y(ts)
-        #ys = np.array([ x.simulate_y(t,ball,physics) for t in ts])
-        plt.plot(ts,ys)
+    if False :
+        floor_state = x.bounce_floor_state(ball, physics)
+        coeff = floor_state._characteristic_coefficient(ball, physics)
+        floor_full_state = floor_state.ball_state()
+        tc = floor_state.time_until_next_bounce(physics)
+        bounce_height = floor_full_state.simulate_y_floorless(.5 * tc, physics)
+        expected_bounce_height = .5 * floor_state.dy**2 / physics.gravity_const
+        print bounce_height, expected_bounce_height
+    
+
+
+    y0 = 1.
+    dys = np.linspace(-1.,1.,5)
+    
+    def linspace_plus_bounce_times(ta,tb,n, x, ball, physics ) :
+        tf = x.event_horizon(ball,physics)
+        ts = np.linspace(ta,tb,n+1)[:-1]
+        n = x.full_bounces_by( ts[-1], ball, physics )
+        tb = x.bounce_times(n, ball, physics )
+        ts = np.concatenate((tb,ts))
+        ts.sort()
         
+        return ts
+    
+    
+    if True :
+        plt.figure()
+        
+        for dy in dys :
+            x = BallState(y0,dy)
+            get_y = np.vectorize( lambda t : x.simulate_y(t, ball, physics) )
+            
+            tf = x.event_horizon(ball,physics)
+            if True :
+                ts = linspace_plus_bounce_times(0,tf, 100, x, ball, physics )
+            else :
+                ts = np.linspace(0,tf,100+1)[:-1]
+                nbounce = 20
+                
+                tb = x.bounce_times(nbounce, ball, physics)
+                ts = np.concatenate((tb,ts))
+                ts.sort()
+                
+            ys = get_y(ts)
+            
+            plt.plot(ts,ys, color='b')
+            
+        plt.xlabel('time $t$')
+        plt.ylabel('height $y(t)$')
+
+
+    if True :        
         trajectories = []
         ys = np.linspace(0.001,1,5)
-        dys = np.linspace(-1.,1.,5)
         
         y0s = []
         dy0s = []
@@ -217,7 +269,9 @@ if __name__ == '__main__' :
                 get_traj = np.vectorize( lambda t : x.simulate(t, ball, physics) )
                 
                 tf = x.event_horizon(ball, physics)
-                ts = np.linspace(0,tf,100+1)[:-1]
+                ts = linspace_plus_bounce_times(0, tf, 100, x, ball, physics )
+                #, tb, n, x, ball, physics)
+                #ts = np.linspace(0,tf,100+1)[:-1]
                 xs = get_traj(ts)
                 
                 trajectories.append( ( ts, xs ) )

@@ -1,14 +1,6 @@
 
 import numpy as np
-
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import scipy.integrate as spint
-
-def get_axes3d() :
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-    return ax
 
 
 class Physics :
@@ -71,6 +63,9 @@ class PendulumState :
 
 
 if __name__ == '__main__' :
+    import matplotlib.pyplot as plt
+    from vis import get_axes3d
+    
     plt.close('all')
     
     physics = Physics()

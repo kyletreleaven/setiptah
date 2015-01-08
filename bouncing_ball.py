@@ -1,8 +1,13 @@
 import numpy as np
 
+def quadratic_equation( A, B, C ) :
+    temp = np.power(B,2.) - 4. * A * C
+    temp = -B + np.sqrt(temp)
+    return .5 * temp / A
+
+
 class Physics :
     gravity_const = 9.8
-
 
 
 class BouncingBall :
@@ -62,13 +67,6 @@ class BallOnFloorState :
         n = np.log( 1. - theta ) / np.log( ball.gamma )  # base gamma
         return int( np.floor(n) )
 
-
-def _larger_quadratic( A, B, C ) :
-    temp = np.power(B,2.) - 4. * A * C
-    temp = -B + np.sqrt(temp)
-    return .5 * temp / A
-
-        
         
 class BallState :
     
@@ -94,9 +92,7 @@ class BallState :
         B = -self.dy
         C = -self.y
         
-        #print A, B, C
-        return _larger_quadratic(A,B,C)
-        
+        return quadratic_equation(A,B,C)
     
     def landing_velocity(self, physics ) :
         t = self.crossing_time(physics)
@@ -172,8 +168,8 @@ if __name__ == '__main__' :
     import matplotlib.pyplot as plt
     plt.close('all')
     
-    from mpl_toolkits.mplot3d import Axes3D
-    
+    from vis import get_axes3d
+        
     def get_axes3d() :
         fig = plt.figure()
         ax = fig.add_subplot(111,projection='3d')

@@ -206,8 +206,13 @@ if __name__ == '__main__' :
         ys = np.linspace(0.001,1,5)
         dys = np.linspace(-1.,1.,5)
         
+        y0s = []
+        dy0s = []
         for y in ys :
             for dy in dys :
+                y0s.append(y)
+                dy0s.append(dy)
+                
                 x = BallState(y,dy)
                 get_traj = np.vectorize( lambda t : x.simulate(t, ball, physics) )
                 
@@ -222,8 +227,13 @@ if __name__ == '__main__' :
             ys = [ x.y for x in xs ]
             dys = [ x.dy for x in xs ]
             
-            ax.plot(ys,dys, zs=ts)
+            #ax.plot(ys,dys, zs=ts)
+            ax.plot(dys, ts, zs=ys)
             
+        ax.scatter( dy0s, np.zeros(len(y0s)), zs=y0s )
+        ax.set_zlabel('height $y$')
+        ax.set_xlabel('velocity $\dot y$')
+        ax.set_ylabel('time $t$')
     
     
     

@@ -116,10 +116,15 @@ if __name__ == '__main__' :
     traju = [ u for u,v in traj ]
     trajv = [ v for u,v in traj ]
     
-    if False :        
+    if True :
         """ display trajectory in 3 space """
         ax = get_axes3d()
-        ax.plot(traju,trajv,zs=ts)
+        
+        ax.plot(ts, traju, zs=trajv )
+        #traju,trajv,zs=ts)
+        ax.set_xlabel('time $t$')
+        ax.set_ylabel('position $x$')
+        ax.set_zlabel('velocity $\dot x$')
     
     if False :
         """ plot trajectory components vs. time """
@@ -158,16 +163,31 @@ if __name__ == '__main__' :
     
     ax = get_axes3d()
     ax.plot_surface(U,V,Pot)
+    ax.set_xlabel('position $x$')
+    ax.set_ylabel('velocity $\dot x$')
+    plt.title('Lyapunov Function $V$')
+    
+    ax = get_axes3d()
+    ax.plot_surface(U,V,Pot)
     ax.plot(traju,trajv,zs=trajPot,c='r')
+    ax.set_xlabel('position $x$')
+    ax.set_ylabel('velocity $\dot x$')
+    plt.title('Lyapunov Function $V$, with sample trajectory')
     
     """ plot the Lyapunov value signal against time """ 
     plt.figure()
+    #plt.loglog(ts, trajPot)
     plt.plot(ts, trajPot)
+    plt.gca().set_yscale('log')
+    plt.xlabel('time $t$')
+    plt.title('Value of Lyapunov Function over time')
     
 
+
+
+
     
-    
-    """ show trajectories of non-linear system """ 
+    """ show trajectories of non-linear system """
     XYtraj = [ UVtoXY( *p ) for p in traj ]
     trajx = [ x for x,y in XYtraj ]
     trajy = [ y for x,y in XYtraj ]
@@ -190,13 +210,15 @@ if __name__ == '__main__' :
     Vxy = VectorXYtoV(X,Y)
     
     PotXY = VectorizedLyap(Uxy,Vxy)
-    ax = get_axes3d()
-    ax.plot_surface(X,Y,PotXY)
     
-    trajPotXY = [ LyapunovFunction( *XYtoUV( *xx ) ) for xx in XYtraj ]
-
-    ax.plot(trajx,trajy, trajPot, c='r' )
-    ax.plot(trajx,trajy, trajPotXY, c='g' ) # these should be the SAME CURVE!
+    if False :
+        ax = get_axes3d()
+        ax.plot_surface(X,Y,PotXY)
+        
+        trajPotXY = [ LyapunovFunction( *XYtoUV( *xx ) ) for xx in XYtraj ]
+        
+        ax.plot(trajx,trajy, trajPot, c='r' )
+        ax.plot(trajx,trajy, trajPotXY, c='g' ) # these should be the SAME CURVE!
 
     plt.show()
     

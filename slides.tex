@@ -647,37 +647,6 @@ $\implies \vecnorm{\vecx(t)-\bar\vecx} \leq \epsilon$
 
 
 
-\begin{frame}
-\frametitle{Other Properties of Equilibria}
-
-\begin{block}{Attractive}
-If there is $\delta > 0$ so that if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
-$\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
-\end{block}
-
-\begin{block}{\emph{Asymptotically} Stable}
-Stable in the sense of Lyapunov \emph{and} attractive.
-
-(Attractive does not imply i.s.L.)
-\end{block}
-
-\begin{block}{Exponentially Stable}
-If there are $\alpha, \beta, \delta >0$, so that if
-$\vecnorm{\vecx(0)-\bar{\vecx}} < \delta$, then
-$\vecnorm{\vecx(t)-\bar\vecx}
-	\leq \alpha \vecnorm{\vecx(0)-\bar\vecx} e^{-\beta t}$
-\end{block}
-
-\end{frame}
-
-
-
-
-\begin{frame}
-\frametitle{Pathology?}
-\end{frame}
-
-
 
 \subsection{Direct Method}
 
@@ -689,6 +658,10 @@ $\vecnorm{\vecx(t)-\bar\vecx}
 It can be challenging, tedious, or impossible
 to prove such claims about ``all trajectories'';
 even to \emph{find} them (pendulum!).
+
+\vitem
+...even to find them; e.g., 
+\emph{there is no formula (!!!) for the pendulum trajectories in terms of simpler function.}
 
 \vitem
 Lyapunov's ``direct'' method can provide a short-cut.
@@ -743,6 +716,62 @@ then, trajectories of the system satisfy some other conditions.
 \end{frame}
 
 
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\begin{itemize}
+\vitem
+Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{pic/smd_V}
+\end{center}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\begin{columns}
+\column{.45\linewidth}
+\centering
+\includegraphics[width=\linewidth]{pic/smd_trajectory}
+
+$\vecx(t)$, a state-space trajectory of the Spring-Mass-Damper system
+
+\column{.45\linewidth}
+\centering
+\includegraphics[width=1\linewidth]{pic/smd_Vtraj}
+
+$V(\vecx(t))$
+
+\end{columns}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\centering
+$V(\vecx(t))$
+
+\includegraphics[width=.8\linewidth]{pic/smd_Vt}
+
+\end{frame}
 
 
 
@@ -953,6 +982,31 @@ The quadratic function $V(z) = z^\xpose P z$ is a Lyapunov function that can ver
 \end{frame}
 
 
+
+
+
+\begin{frame}
+\frametitle{Other Properties of Equilibria}
+
+\begin{block}{Attractive}
+If there is $\delta > 0$ so that if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
+$\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
+\end{block}
+
+\begin{block}{\emph{Asymptotically} Stable}
+Stable in the sense of Lyapunov \emph{and} attractive.
+
+(Attractive does not imply i.s.L.)
+\end{block}
+
+\begin{block}{Exponentially Stable}
+If there are $\alpha, \beta, \delta >0$, so that if
+$\vecnorm{\vecx(0)-\bar{\vecx}} < \delta$, then
+$\vecnorm{\vecx(t)-\bar\vecx}
+	\leq \alpha \vecnorm{\vecx(0)-\bar\vecx} e^{-\beta t}$
+\end{block}
+
+\end{frame}
 
 
 

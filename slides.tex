@@ -57,57 +57,42 @@
 
 \section{State-space}
 
+
 \begin{frame}
-\frametitle{State-space Philosophy}
-
-(1. Draw many possible trajectories of a bouncing ball)
-
-\begin{block}{Problem}
-Many possible trajectories from a particular location, of a bouncing ball under gravity.
-\end{block}
-
-
+\vfill
+\centering
+{\Large State Space: Redux}
+\vfill\null
 \end{frame}
 
 
 \begin{frame}
+%\frametitle{State-space Philosophy}
+\centering
+\vfill
+%\includegraphics[width=.6\linewidth]{pic/tennis-ball-650x487.jpeg}
+\includegraphics[width=.6\linewidth]{pic/airball.jpg}
+
+Where's the ball going to go?
+\vfill\null
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{State-space Philosophy}
 
 \begin{itemize}
 
 \vitem Clearly, position is not all the information that is needed to determine trajectory.
 
-\vitem But clearly, the ball couldn't just do anything, and only certain kinds of trajectories are possible.
+\vitem But, the ball couldn't do just anything; only certain kinds of trajectories are possible.
 
 \end{itemize}
-
-\end{frame}
-
-
-
-\begin{frame}
-\begin{itemize}
-\vitem Associating a ``velocity'' with the ball gives enough information to predict the trajectory exactly.
-
-\vitem So the combination of position and velocity is some essential unit information we call state.
-
-\vitem In other words, knowing the state at a particular moment in time is sufficient to simulate the entire trajectory.
-
-\vitem Every possible trajectory can be recovered using some \emph{initial condition} $x_0$.
-\end{itemize}
-
-(put the Wikipedia quote?)
 
 \vfill\null
-
-\end{frame}
-
-
-
-
-\begin{frame}
-
-(2. Draw trajectories originating from initial conditions in a state space.)
-
 \end{frame}
 
 
@@ -115,28 +100,30 @@ Many possible trajectories from a particular location, of a bouncing ball under 
 
 
 \begin{frame}
-\frametitle{Bouncing Ball State-space Model}
+\frametitle{State-space Philosophy}
+%(1. Draw many possible trajectories of a bouncing ball)
 
-Continuous dynamics: $\ddot x = -g$
+\begin{columns}
 
-``Jump'' dynamics: Whenever $x = 0$ and $\dot x < 0$, then
-$x^+ = x$, $\dot x^+ = -\gamma \dot x$.
+\column{.6\linewidth}
+\centering
+\includegraphics[width=\linewidth]{pic/bouncing_ball_flat}
 
-\end{frame}
+Infinitely many trajectories of a ball
 
+(under influence of gravity)
 
+\column{.35\linewidth}
+\centering
+\includegraphics[width=\linewidth]{pic/pink.png}
 
+(But not arbitrary)
 
+\end{columns}
 
-
-
-
-
-\begin{frame}
-
-(Put solution equations?)
-
-(3. Could annotate a trajectory in state-time space)
+%\begin{block}{Problem}
+%may exhibit many trajectories possbile from a particular location, of a bouncing ball under gravity.
+%\end{block}
 
 \end{frame}
 
@@ -148,27 +135,151 @@ $x^+ = x$, $\dot x^+ = -\gamma \dot x$.
 
 
 
+
+
+
 \begin{frame}
-\frametitle{A formalism for real-valued signals}
+\frametitle{Bouncing Ball Ideal Model}
+
+\begin{block}{Continuous dynamics}
+\begin{itemize}
+\vitem
+$\ddot x = -g$ (free fall)
+\end{itemize}
+\end{block}
+
+\begin{block}{``Jump'' dynamics}
+\begin{itemize}
+\vitem
+Whenever $x = 0$ and $\dot x < 0$
+
+\vitem
+Then, (bounce)
+\[
+\begin{cases}
+x^+ = x	\\
+\dot x^+ = -\gamma \dot x
+\end{cases}
+\]
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Bouncing Ball Trajectories (Solution)}
+\fontsize{10pt}{7.2}\selectfont
+\begin{itemize}
+\vitem
+Trajectory during initial \emph{free-fall} \\
+$y(t) = y(0) + \dot y(0) \, t - \onehalf \ g \, t^2$
+
+\vitem
+Time of the initial bounce \\
+$t_0 = g^{-1} \left( \dot y(0) + \sqrt{ 2g \, y(0) + \dot y^2(0)} \right)$
+
+\vitem
+Velocity immediately \emph{after} $k$-th bounce \\
+$\dot y(t_k^+) = \gamma^k \sqrt{ 2g \, y(0) + \dot y^2(0) }$
+
+\vitem
+Time of each subsequent bounce \\
+$t_k = t_0 + (2/g) \ \dot y(t_0^+) \ [1-\gamma^k ]/(1-\gamma)$
+
+\vitem Trajectory during $(k+1)$-th \emph{free-fall} \\
+$y(t) = \dot y(t_k^+) \ t' - \onehalf \ g \, t'^2$ \hfill (for $t_k \leq t < t_{k+1}$, $t' = t - t_k$)
+
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+
+\centering
+\emph{Trajectories determined by $y(0)$ and $\dot y(0)$ \emph{alone}!}
+
+\includegraphics[width=.7\linewidth]{pic/bouncing_ball_flat}
+
+$y(0)=1$, $\dot y(0)$ various
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{A Bouncing Ball ``State-Space''}
+\begin{itemize}
+%\vitem Associating a ``velocity'' with the ball gives enough information to determine the future trajectory.
+
+\vitem $(y(t),\dot y(t))$, combination of position and velocity,
+\emph{provides enough information to determine the whole future(s)}.
+
+\vitem ...essential unit of information we call \emph{state}.
+
+%\vitem Every possible trajectory can be recovered using some \emph{initial condition} $x_0$.
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+\begin{frame}
+\vfill\centering
+\includegraphics[width=.9\linewidth]{pic/bouncing_ball_deflattened}
+\vfill\null
+\end{frame}
+\begin{frame}
+\vfill\centering
+\includegraphics[width=.9\linewidth]{pic/bouncing_ball_deflattened2}
+\vfill\null
+\end{frame}
+\begin{frame}
+\vfill\centering
+\includegraphics[width=.9\linewidth]{pic/bouncing_ball_reflattened}
+\vfill\null
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{A Common Class of State-Space Models}
 
 \begin{itemize}
+
 \vitem We begin observing a signal, or ``trajectory'',
 \[
 y(t) \in \reals.
 \]
 
-\vitem We call the present moment $t=0$, and are interested in $y(t)$ over $t \geq 0$ (future).
+%\vitem We call the present moment $t=0$, and are interested in $y(t)$ over $t \geq 0$ (future).
 
 %\vitem Many trajectories are possible, but there are ``dynamical constraints''.
 
-\vitem Substitute another signal $\vecx(t) \in \reals^d$ (perhaps more complicated), and functions $f : \reals^d \to \reals^d$ and $g : \reals^d \to \reals$, so that:
+\vitem Try to substitute another signal $\vecx(t) \in \reals^d$, and
+functions $f : \reals^d \to \reals^d$ and $g : \reals^d \to \reals$:
 
 \begin{enumerate}
 \vitem The system
 \[
 \begin{cases}
-	\dot x = f(x) \\
-	x(0) = x_0
+	\dot \vecx = f(\vecx) \\
+	\vecx(0) = \vecx_0 \qquad \text{initial condition}
 \end{cases}
 \]
 has a unique solution over $t \geq 0$;
@@ -350,7 +461,7 @@ But we have a gut feeling that one of these equilibria is not ``stable''.
 
 \vfill
 \begin{block}{Formal}
-An equilibrium $\bar\vecx$ is said to be \emph{stable in the sense of Lyapunov} if:
+An equilibrium $\bar\vecx$ is said to be \textbf{stable in the sense of Lyapunov} if:
 for every $\epsilon > 0$, there is $\delta >0$, so that
 if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
 $\vecnorm{\vecx(t) - \bar\vecx} < \epsilon$. 
@@ -407,6 +518,8 @@ $\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
 
 \begin{block}{\emph{Asymptotically} Stable}
 Stable in the sense of Lyapunov \emph{and} attractive.
+
+(Attractive does not imply i.s.L.)
 \end{block}
 
 \begin{block}{Exponentially Stable}
@@ -440,11 +553,60 @@ even to \emph{find} them (pendulum!).
 
 \vitem
 Lyapunov's ``direct'' method can provide a short-cut.
+(State-space comes to the rescue again.)
 
 \end{itemize}
 
 \vfill\null
 \end{frame}
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\begin{itemize}
+\vitem
+Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
+
+%\vitem
+\[
+\begin{aligned}
+\doteq \dot V(t) = 
+\timederiv V(\vecx(t))
+	&= \frac{\partial V}{\partial \vecx} (\vecx(t)) \times \frac{d\vecx}{dt}	\\
+	&= \nabla_\vecx V(\vecx(t)) \cdot \dot\vecx	\\
+	&= \nabla_\vecx V(\vecx(t)) \cdot f(\vecx(t))	\\
+%	&\doteq \dot V(\vecx(t)).
+\end{aligned}
+\]
+
+%\begin{block}{Lyapunov}
+%\begin{enumerate}
+\vitem
+Unlike trajectories, $V$, $\dot V$ are often obtainable;
+(after all, we have some choice in $V$)
+%e.g., if we can choose $V$ from a family of functions whose partial derivatives we can compute
+
+\vitem
+$\dot V$ is \emph{also} a ``state function''; given $\vecx$, doesn't depend on $t$
+
+\vitem
+Lyapunov theorems usually of the form
+
+If $V$ and $\dot V$ satisfy some conditions,
+
+then, trajectories of the system satisfy some other conditions.
+
+%\end{enumerate}
+%\end{block}
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
 
 
 
@@ -454,8 +616,8 @@ Lyapunov's ``direct'' method can provide a short-cut.
 
 \begin{itemize}
 
-\vitem
-Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar function.
+%\vitem
+%Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar function.
 
 \vitem
 $V$ is a Lyapunov candidate if is \emph{positive-definite}, i.e.,
@@ -482,34 +644,32 @@ May be positive definite \emph{locally}; i.e., in a ``neighborhood''
 
 
 \begin{frame}
+\frametitle{Definiteness}
 
-5. Define and demonstrate continuous, [positive/negative] [semi-] definiteness.
+5. Define and demonstrate [positive/negative] [semi-] definiteness.
 
-6. Define and demonstrate sub-level sets.
+(6. Define and demonstrate sub-level sets?)
 
 \end{frame}
+
+
+
+
+
+
+
+
 
 
 
 
 \begin{frame}
-Statement of the direct method
 
-
-\[
-\begin{aligned}
-\timederiv V(\vecx(t))
-	&= \frac{\partial V}{\partial \vecx} \times \frac{d\vecx}{dt}	\\
-	&= \nabla_\vecx V \cdot \dot\vecx	\\
-	&= \nabla_\vecx V \cdot f(\vecx)	\\
-	&\doteq \dot V(\vecx).
-\end{aligned}
-\]
-
-If $\dot V$ blah blah...
 
 
 \end{frame}
+
+
 
 
 
@@ -743,6 +903,42 @@ The quadratic function $V(z) = z^\xpose P z$ is a Lyapunov function that can ver
 
 
 
+
+\begin{frame}
+\frametitle{Discussion}
+
+\begin{itemize}
+\vitem
+There is an instability theory
+
+\vitem
+Similar theories for discrete systems (e.g., computer programs);
+hybrid systems (bouncing ball)
+
+\vitem A lot of this material cribbed from
+
+\url{http://stanford.edu/class/ee363/lectures/lyap.pdf}
+\end{itemize}
+
+
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+\begin{frame}
+BACKUP
+\end{frame}
+
+
+
+
 \makecommand{\matJ}{{\bf J}}
 
 \begin{frame}
@@ -773,38 +969,6 @@ $\dot \succ 0$, but $\dot V \neq 0$ means unstable;
 
 
 
-\begin{frame}
-\frametitle{Discussion}
-
-\begin{itemize}
-\vitem
-There is an instability theory
-
-\vitem
-Similar theories for discrete systems (e.g., computer programs);
-hybrid systems (bouncing ball)
-\end{itemize}
-
-
-
-\end{frame}
-
-
-
-
-
-
-
-
-
-\begin{frame}
-BACKUP
-\end{frame}
-
-
-
-
-
 
 
 
@@ -831,15 +995,6 @@ V = b \left( y - x^{2}\right)
 
 
 
-
-
-
-
-
-\begin{frame}\end{frame}
-\begin{frame}\end{frame}
-\begin{frame}\end{frame}
-\begin{frame}\end{frame}
 
 
 

@@ -147,8 +147,8 @@ class BallState :
         # floor state after first bounce
         floor_state = self.bounce_floor_state(ball, physics)
         
-        if t23 > floor_state.event_horizon(ball, physics) :
-            raise 'beyond the Zeno point'
+        if t23 >= floor_state.event_horizon(ball, physics) :
+            return BallState(0.,0.)
         
         # number of full bounces in the time *after* the first one
         n = floor_state.full_crossings_by( t23, ball, physics)
@@ -215,10 +215,10 @@ if __name__ == '__main__' :
 
 
     y0 = 1.
-    dys = np.linspace(-1.,1.,5)
+    dys = np.linspace(-2.,5.,5)
     
     def linspace_plus_bounce_times(ta,tb,n, x, ball, physics ) :
-        tf = x.event_horizon(ball,physics)
+        #tf = x.event_horizon(ball,physics)
         ts = np.linspace(ta,tb,n+1)[:-1]
         n = x.full_bounces_by( ts[-1], ball, physics )
         tb = x.bounce_times(n, ball, physics )
@@ -248,10 +248,12 @@ if __name__ == '__main__' :
                 
             ys = get_y(ts)
             
-            plt.plot(ts,ys, color='b')
+            plt.plot(ts,ys)
             
         plt.xlabel('time $t$')
         plt.ylabel('height $y(t)$')
+        plt.title('Multiple trajectories of a ball starting $y=1$')
+        #a,b = plt.xlim() ; plt.xlim( (-1,b) )
 
 
     if True :        
@@ -260,7 +262,8 @@ if __name__ == '__main__' :
         
         y0s = []
         dy0s = []
-        for y in ys :
+        #for y in ys :
+        for y in [1.] :
             for dy in dys :
                 y0s.append(y)
                 dy0s.append(dy)
@@ -288,6 +291,19 @@ if __name__ == '__main__' :
         ax.set_zlabel('height $y$')
         ax.set_xlabel('velocity $\dot y$')
         ax.set_ylabel('time $t$')
+        
+        
+        import sympy
+        y, v, g, t = sympy.symbols('y v g t')
+        c = sympy.symbols('c')
+        yt = y + v * t - g * t**2 / 2
+        vt = v - g * t
+        
+        t0 = sympy.solve(yt,t)[1]
+        vt0 = vt.subs(t,t0)
+        vt0plus = -c * vt0
+        
+        
     
     
     

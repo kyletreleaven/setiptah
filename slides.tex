@@ -429,7 +429,6 @@ We re-wrote the differential equation as
 
 \begin{frame}
 
-
 \centering
 \emph{Equilibrium for the bouncing ball?}
 
@@ -442,30 +441,47 @@ We re-wrote the differential equation as
 \begin{frame}
 \frametitle{Ideal Pendulum System}
 
-\begin{columns}
-
-\column{.45\linewidth}
+\begin{center}
+\includegraphics[width=.4\linewidth]{pic/Simple_gravity_pendulum.png}
+\end{center}
 
 \begin{block}{Continuous Dynamics}
-$\ddot\theta + (g/l) \sin \theta = 0$
+\centering
+$l \, \ddot\theta + g \sin(\theta) = 0$
 \end{block}
 
-Pendulum trajectories satisfy
+\end{frame}
 
 
 
-Use angle and angular velocity as a state-space.
 
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Pendulum State-space}
+
+\begin{columns}
+\column{.6\linewidth}
+
+\begin{itemize}
+
+\vitem
+Use angle and angular velocity as a state-space:
 $\vectheta = (\theta, \dot \theta)^\xpose$
 
+\vitem
 $f(\vectheta)
 	= \begin{pmatrix}
 		\dot\theta \\
-		-\frac{g}{l} \sin\theta
+		-(g/l) \sin(\theta)
 	\end{pmatrix}$.
-	
-$g > 0$ (thanks, universe), so:
+%$g > 0$ (thanks, universe), so:
 
+\vitem Therefore, stationary when
 \[
 \begin{cases}
 \dot\theta = 0 \\
@@ -473,15 +489,18 @@ $g > 0$ (thanks, universe), so:
 \end{cases}
 \]
 
-\column{.45\linewidth}
+\end{itemize}
+\vfill\null
 
-\begin{center}
+\column{.4\linewidth}
+
 \includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
-\end{center}
 
 \end{columns}
 
 \end{frame}
+
+
 
 
 
@@ -525,7 +544,7 @@ $\dot\theta = 0$, $\theta=\pi$
 \end{columns}
 
 \vfill
-But we have a gut feeling that one of these equilibria is not ``stable''.
+\emph{But we have a gut feeling that one of these equilibria is not ``stable''.}
 
 \end{frame}
 
@@ -538,6 +557,16 @@ But we have a gut feeling that one of these equilibria is not ``stable''.
 
 \section{Stability}
 
+
+\begin{frame}
+\vfill
+\centering
+{\Large STABILITY}
+\vfill\null
+\end{frame}
+
+
+
 \subsection{Introduction}
 
 \begin{frame}
@@ -549,7 +578,7 @@ But we have a gut feeling that one of these equilibria is not ``stable''.
 
 \vitem Stability of ``systems'' is a colloquialism which arose because of the importance of \emph{linear} systems;
 
-\vitem Linear systems tend to have unique equilibrium (at origin).
+\vitem ...they tend to have unique equilibrium;
 
 \vitem But, it doesn't make any sense to ask \emph{``Is the pendulum stable?''}
 

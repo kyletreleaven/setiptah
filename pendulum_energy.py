@@ -106,7 +106,7 @@ if __name__ == '__main__' :
             
         traj_V = energy_vecd( traj_theta, traj_dtheta ) # yes, I realize I cheated
     
-    ax.plot(traj_theta,traj_dtheta, zs=traj_V )
+    #ax.plot(traj_theta,traj_dtheta, zs=traj_V, color='r', linewidth=1 )
     
     plt.show()
 

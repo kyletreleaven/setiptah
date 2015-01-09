@@ -8,11 +8,16 @@
 \usepackage{makecmds}
 \usepackage{movie15}
 
+\usepackage{subfigure}
+\usepackage{caption}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
 
 \author{Kyle Treleaven}
-\title{State-space, Equilibria, and Stability and Lyapunov Methods I}
+\title{
+State-space, Equilibria, and Stability and Lyapunov Methods I \\
+(Lunch \& Learn)
+}
 %\setbeamercovered{transparent} 
 %\setbeamertemplate{navigation symbols}{} 
 %\logo{} 
@@ -268,7 +273,7 @@ $y(0)=1$, $\dot y(0)$ various
 
 \begin{itemize}
 
-\vitem We begin observing a signal, or ``trajectory'',
+\vitem We begin observing a signal,
 \[
 y(t) \in \reals.
 \]
@@ -544,7 +549,7 @@ $\dot\theta = 0$, $\theta=\pi$
 \end{columns}
 
 \vfill
-\emph{But we have a gut feeling that one of these equilibria is not ``stable''.}
+\emph{But we have a gut feeling that only one of these equilibria is ``stable''.}
 
 \end{frame}
 
@@ -567,7 +572,10 @@ $\dot\theta = 0$, $\theta=\pi$
 
 
 
-\subsection{Introduction}
+\subsection{Introduction and Definition}
+
+
+
 
 \begin{frame}
 \frametitle{Stability}
@@ -588,7 +596,6 @@ $\dot\theta = 0$, $\theta=\pi$
 
 
 
-\subsection{Definition}
 
 \begin{frame}
 \frametitle{Lyapunov Stability}
@@ -609,6 +616,7 @@ $\vecnorm{\vecx(t) - \bar\vecx} < \epsilon$.
 \vfill\null
 
 \end{frame}
+
 
 
 
@@ -673,53 +681,6 @@ Lyapunov's ``direct'' method can provide a short-cut.
 \end{frame}
 
 
-\begin{frame}
-\frametitle{Functions of State}
-
-\begin{itemize}
-\vitem
-Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
-
-%\vitem
-\[
-\begin{aligned}
-\doteq \dot V(t) = 
-\timederiv V(\vecx(t))
-	&= \frac{\partial V}{\partial \vecx} (\vecx(t)) \times \frac{d\vecx}{dt}	\\
-	&= \nabla_\vecx V(\vecx(t)) \cdot \dot\vecx	\\
-	&= \nabla_\vecx V(\vecx(t)) \cdot f(\vecx(t))	\\
-%	&\doteq \dot V(\vecx(t)).
-\end{aligned}
-\]
-
-%\begin{block}{Lyapunov}
-%\begin{enumerate}
-\vitem
-Unlike trajectories, $V$, $\dot V$ are often obtainable;
-(after all, we have some choice in $V$)
-%e.g., if we can choose $V$ from a family of functions whose partial derivatives we can compute
-
-\vitem
-$\dot V$ is \emph{also} a ``state function''; given $\vecx$, doesn't depend on $t$
-
-\vitem
-Lyapunov theorems usually of the form
-
-If $V$ and $\dot V$ satisfy some conditions,
-
-then, trajectories of the system satisfy some other conditions.
-
-%\end{enumerate}
-%\end{block}
-\end{itemize}
-
-\end{frame}
-
-
-
-
-
-
 
 
 
@@ -776,11 +737,58 @@ $V(\vecx(t))$
 
 
 
+\begin{frame}
+\frametitle{Restriction Sets}
+\begin{figure}
+\subfigure[$V(\vecx) \leq 1$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_one} }
+\subfigure[$V(\vecx) \leq 1/2$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_half} }
+\subfigure[$V(\vecx) \leq 1/4$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_quarter} }
+\subfigure[$V(\vecx) \leq 1/10$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_tenth} }
+\end{figure}
+
+\end{frame}
+
+
 
 
 
 \begin{frame}
-\frametitle{Lyapunov candidates}
+\frametitle{Functions of State}
+
+\begin{itemize}
+\vitem
+Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
+
+\vitem
+Let $V(t) = V(\vecx(t))$
+
+\vitem
+\[
+\begin{aligned}
+\dot V(t) \doteq
+\timederiv V(\vecx(t))
+	&= \frac{\partial V}{\partial \vecx} (\vecx(t)) \times \frac{d\vecx}{dt}	\\
+	&= \nabla_\vecx V(\vecx(t)) \cdot \dot\vecx	\\
+	&= \nabla_\vecx V(\vecx(t)) \cdot f(\vecx(t))	\\
+%	&\doteq \dot V(\vecx(t)).
+\end{aligned}
+\]
+
+\vitem $\dot V$ is \emph{also} a function of \emph{state}; and,
+
+\vitem Depends only on $V$ and $f$
+
+\end{itemize}
+\vfill\null
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Lyapunov Theorems}
 
 \begin{itemize}
 
@@ -788,7 +796,7 @@ $V(\vecx(t))$
 %Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar function.
 
 \vitem
-$V$ is a Lyapunov candidate if is \emph{positive-definite}, i.e.,
+$V$ is a Lyapunov candidate if \emph{positive-definite}, i.e.,
 
 \[
 \begin{cases}
@@ -804,6 +812,8 @@ May be positive definite \emph{locally}; i.e., in a ``neighborhood''
 \vitem
 (Assuming \emph{without loss of generality} that $\bar{\vecx} = \zerovec$.)
 
+\vitem $\dot V(\vecx) \leq 0$ for all $\vecx$, then $\zerovec$ is stable i.s.L.
+
 \end{itemize}
 \vfill\null
 \end{frame}
@@ -811,15 +821,6 @@ May be positive definite \emph{locally}; i.e., in a ``neighborhood''
 
 
 
-\begin{frame}
-\frametitle{Definiteness}
-
-5. Define and demonstrate [positive/negative] [semi-] definiteness.
-
-(6. Define and demonstrate sub-level sets?)
-
-\end{frame}
-
 
 
 
@@ -832,27 +833,22 @@ May be positive definite \emph{locally}; i.e., in a ``neighborhood''
 
 
 \begin{frame}
+\frametitle{A Lyapunov Function for the Pendulum}
 
-
-
-\end{frame}
-
-
-
-
-
-\begin{frame}
-\frametitle{Pendulum Example}
-
-(put the pendulum energy picture)
+\begin{columns}
+\column{.6\linewidth}
 
 \[
 E = mgh + \onehalf m v^2.
 \]
 
-$h = l(1-\cos\theta)$
+\[
+h = l(1-\cos\theta)
+\]
 
-$v = (l\dot\theta)^2$
+\[
+v = (l\dot\theta)^2
+\]
 
 \[
 E
@@ -864,14 +860,31 @@ E
 E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
 \]
 
-(plot the surface, show positive definite!)
+\column{.35\linewidth}
+\includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
+
+\end{columns}
 
 \end{frame}
 
 
 
+
+
 \begin{frame}
-\frametitle{Pendulum Example}
+\centering
+\includegraphics[width=.9\linewidth]{pic/pendulum_energy}
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Calculating $\dot V$ for the Pendulum}
+
 \[
 \frac{\partial}{\partial\theta} E' = g \sin \theta
 \]
@@ -888,16 +901,19 @@ E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
 		\times f_{\dot\theta}(\vectheta)
 \]
 
-
 \[
 \dot E' =
 	\left( g \sin\theta \times \dot\theta \right)
 	+ \left( l \dot\theta \times (-g/l) \sin \theta \right) = 0
 \]
 
-(This is something we expected, being familiar with physics and conservation of total energy.)
+\begin{itemize}
+\vitem
+Proof that the bottom equilibrium is stable i.s.L.;
 
-Proof that the bottom equilibrium is stable i.s.L.; but \emph{not} attractive
+\end{itemize}
+
+\vfill\null
 
 \end{frame}
 
@@ -906,6 +922,90 @@ Proof that the bottom equilibrium is stable i.s.L.; but \emph{not} attractive
 
 
 
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Other Properties of Equilibria}
+
+\begin{block}{Attractive}
+If there is $\delta > 0$ so that if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
+$\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
+\end{block}
+
+\begin{block}{\emph{Asymptotically} Stable}
+Stable in the sense of Lyapunov \emph{and} attractive.
+
+(Attractive does not imply i.s.L.)
+\end{block}
+
+\begin{block}{Exponentially Stable}
+If there are $\alpha, \beta, \delta >0$, so that if
+$\vecnorm{\vecx(0)-\bar{\vecx}} < \delta$, then
+$\vecnorm{\vecx(t)-\bar\vecx}
+	\leq \alpha \vecnorm{\vecx(0)-\bar\vecx} e^{-\beta t}$
+\end{block}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Discussion}
+
+\begin{itemize}
+
+\vitem Several variations (technical) on the Lyapunov theorem
+
+\vitem
+Unlike trajectories, $V$, $\dot V$ are often obtainable;
+(after all, we have room to choose $V$)
+
+\vitem
+There are methods to prove \emph{instability};
+
+\vitem
+Linear systems are particularly easy to analyze (next time?)
+
+\vitem
+Similar theories for discrete systems (e.g., computer programs);
+hybrid systems (bouncing ball); base on the same concept
+
+\vitem A lot of this material cribbed from
+\url{http://stanford.edu/class/ee363/lectures/lyap.pdf}
+
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+BACKUP
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Definiteness}
+
+5. Define and demonstrate [positive/negative] [semi-] definiteness.
+
+(6. Define and demonstrate sub-level sets?)
+
+\end{frame}
 
 
 
@@ -982,66 +1082,6 @@ The quadratic function $V(z) = z^\xpose P z$ is a Lyapunov function that can ver
 \end{frame}
 
 
-
-
-
-\begin{frame}
-\frametitle{Other Properties of Equilibria}
-
-\begin{block}{Attractive}
-If there is $\delta > 0$ so that if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
-$\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
-\end{block}
-
-\begin{block}{\emph{Asymptotically} Stable}
-Stable in the sense of Lyapunov \emph{and} attractive.
-
-(Attractive does not imply i.s.L.)
-\end{block}
-
-\begin{block}{Exponentially Stable}
-If there are $\alpha, \beta, \delta >0$, so that if
-$\vecnorm{\vecx(0)-\bar{\vecx}} < \delta$, then
-$\vecnorm{\vecx(t)-\bar\vecx}
-	\leq \alpha \vecnorm{\vecx(0)-\bar\vecx} e^{-\beta t}$
-\end{block}
-
-\end{frame}
-
-
-
-
-\begin{frame}
-\frametitle{Discussion}
-
-\begin{itemize}
-\vitem
-There is an instability theory
-
-\vitem
-Similar theories for discrete systems (e.g., computer programs);
-hybrid systems (bouncing ball)
-
-\vitem A lot of this material cribbed from
-
-\url{http://stanford.edu/class/ee363/lectures/lyap.pdf}
-\end{itemize}
-
-
-
-\end{frame}
-
-
-
-
-
-
-
-
-
-\begin{frame}
-BACKUP
-\end{frame}
 
 
 

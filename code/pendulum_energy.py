@@ -91,7 +91,6 @@ if __name__ == '__main__' :
     plt.ylabel('$d\\theta$, angular velocity (rad/s)')
     ax.set_zlabel('$E$, total energy')
     
-    #ts = np.linspace(0,3,100)
     ts = np.arange(0,10,.01)
     state = PendulumState(np.pi / 3)
     
@@ -106,7 +105,12 @@ if __name__ == '__main__' :
             
         traj_V = energy_vecd( traj_theta, traj_dtheta ) # yes, I realize I cheated
     
-    #ax.plot(traj_theta,traj_dtheta, zs=traj_V, color='r', linewidth=1 )
+    ax.plot(traj_theta,traj_dtheta, zs=traj_V, color='r', linewidth=1 )
+    
+    plt.figure()
+    plt.plot(ts,traj_V)
+    plt.xlabel('time $t$')
+    plt.title('Energy Drift over time, due to imperfect simulation')
     
     plt.show()
 

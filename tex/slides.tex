@@ -12,6 +12,7 @@
 \usepackage{caption}
 
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../pic/}}
 
 \author{Kyle Treleaven}
 \title{
@@ -75,8 +76,8 @@ State-space, Equilibria, and Stability and Lyapunov Methods I \\
 %\frametitle{State-space Philosophy}
 \centering
 \vfill
-%\includegraphics[width=.6\linewidth]{pic/tennis-ball-650x487.jpeg}
-\includegraphics[width=.6\linewidth]{pic/airball.jpg}
+%\includegraphics[width=.6\linewidth]{tennis-ball-650x487.jpeg}
+\includegraphics[width=.6\linewidth]{airball.jpg}
 
 Where's the ball going to go?
 \vfill\null
@@ -112,7 +113,7 @@ Where's the ball going to go?
 
 \column{.6\linewidth}
 \centering
-\includegraphics[width=\linewidth]{pic/bouncing_ball_flat}
+\includegraphics[width=\linewidth]{bouncing_ball_flat}
 
 Infinitely many trajectories of a ball
 
@@ -120,7 +121,7 @@ Infinitely many trajectories of a ball
 
 \column{.35\linewidth}
 \centering
-\includegraphics[width=\linewidth]{pic/pink.png}
+\includegraphics[width=\linewidth]{pink.png}
 
 (But not arbitrary)
 
@@ -221,7 +222,7 @@ $y(t) = \dot y(t_k^+) \ t' - \onehalf \ g \, t'^2$ \hfill (for $t_k \leq t < t_{
 \centering
 \emph{Trajectories determined by $y(0)$ and $\dot y(0)$ \emph{alone}!}
 
-\includegraphics[width=.7\linewidth]{pic/bouncing_ball_flat}
+\includegraphics[width=.7\linewidth]{bouncing_ball_flat}
 
 $y(0)=1$, $\dot y(0)$ various
 
@@ -250,17 +251,17 @@ $y(0)=1$, $\dot y(0)$ various
 
 \begin{frame}
 \vfill\centering
-\includegraphics[width=.9\linewidth]{pic/bouncing_ball_deflattened}
+\includegraphics[width=.9\linewidth]{bouncing_ball_deflattened}
 \vfill\null
 \end{frame}
 \begin{frame}
 \vfill\centering
-\includegraphics[width=.9\linewidth]{pic/bouncing_ball_deflattened2}
+\includegraphics[width=.9\linewidth]{bouncing_ball_deflattened2}
 \vfill\null
 \end{frame}
 \begin{frame}
 \vfill\centering
-\includegraphics[width=.9\linewidth]{pic/bouncing_ball_reflattened}
+\includegraphics[width=.9\linewidth]{bouncing_ball_reflattened}
 \vfill\null
 \end{frame}
 
@@ -316,7 +317,7 @@ has a unique solution over $t \geq 0$;
 \frametitle{Review of Last Time: Spring-Mass-Damper}
 
 \begin{center}
-\includegraphics[width=.3\linewidth]{pic/spring-mass-damper.png}
+\includegraphics[width=.3\linewidth]{spring-mass-damper.png}
 \end{center}
 
 \begin{block}{Second-order, Linear Dynamical System}
@@ -388,7 +389,7 @@ We re-wrote the differential equation as
 
 
 
-\makecommand{\doequil}{\includegraphics[width=1cm]{pic/equilibrium.jpg}}
+\makecommand{\doequil}{\includegraphics[width=1cm]{equilibrium.jpg}}
 
 
 \section{Equilibria}
@@ -437,7 +438,7 @@ We re-wrote the differential equation as
 \centering
 \emph{Equilibrium for the bouncing ball?}
 
-\includegraphics[width=.7\linewidth]{pic/bouncing_ball_flat}
+\includegraphics[width=.7\linewidth]{bouncing_ball_flat}
 
 \end{frame}
 
@@ -447,7 +448,7 @@ We re-wrote the differential equation as
 \frametitle{Ideal Pendulum System}
 
 \begin{center}
-\includegraphics[width=.4\linewidth]{pic/Simple_gravity_pendulum.png}
+\includegraphics[width=.4\linewidth]{Simple_gravity_pendulum.png}
 \end{center}
 
 \begin{block}{Continuous Dynamics}
@@ -499,7 +500,7 @@ $f(\vectheta)
 
 \column{.4\linewidth}
 
-\includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
+\includegraphics[width=\linewidth]{Simple_gravity_pendulum.png}
 
 \end{columns}
 
@@ -530,7 +531,7 @@ Two [physically] distinct equilibria:
 \column{.45\linewidth}
 
 \begin{center}
-\includegraphics[width=.4\linewidth]{pic/Pendulum_0deg.png}
+\includegraphics[width=.4\linewidth]{Pendulum_0deg.png}
 
 $\dot\theta = 0$, $\theta=0$
 
@@ -540,7 +541,7 @@ $\dot\theta = 0$, $\theta=0$
 \column{.45\linewidth}
 
 \begin{center}
-\includegraphics[width=.4\linewidth]{pic/Pendulum_180deg.png}
+\includegraphics[width=.4\linewidth]{Pendulum_180deg.png}
 
 $\dot\theta = 0$, $\theta=\pi$
 \end{center}
@@ -693,7 +694,7 @@ Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
 \end{itemize}
 
 \begin{center}
-\includegraphics[width=.9\linewidth]{pic/smd_V}
+\includegraphics[width=.9\linewidth]{smd_V}
 \end{center}
 
 \end{frame}
@@ -707,13 +708,13 @@ Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
 \begin{columns}
 \column{.45\linewidth}
 \centering
-\includegraphics[width=\linewidth]{pic/smd_trajectory}
+\includegraphics[width=\linewidth]{smd_trajectory}
 
 $\vecx(t)$, a state-space trajectory of the Spring-Mass-Damper system
 
 \column{.45\linewidth}
 \centering
-\includegraphics[width=1\linewidth]{pic/smd_Vtraj}
+\includegraphics[width=1\linewidth]{smd_Vtraj}
 
 $V(\vecx(t))$
 
@@ -730,7 +731,7 @@ $V(\vecx(t))$
 \centering
 $V(\vecx(t))$
 
-\includegraphics[width=.8\linewidth]{pic/smd_Vt}
+\includegraphics[width=.8\linewidth]{smd_Vt}
 
 \end{frame}
 
@@ -740,10 +741,10 @@ $V(\vecx(t))$
 \begin{frame}
 \frametitle{Restriction Sets}
 \begin{figure}
-\subfigure[$V(\vecx) \leq 1$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_one} }
-\subfigure[$V(\vecx) \leq 1/2$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_half} }
-\subfigure[$V(\vecx) \leq 1/4$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_quarter} }
-\subfigure[$V(\vecx) \leq 1/10$]{ \includegraphics[width=.35\linewidth]{pic/sublevel_tenth} }
+\subfigure[$V(\vecx) \leq 1$]{ \includegraphics[width=.35\linewidth]{sublevel_one} }
+\subfigure[$V(\vecx) \leq 1/2$]{ \includegraphics[width=.35\linewidth]{sublevel_half} }
+\subfigure[$V(\vecx) \leq 1/4$]{ \includegraphics[width=.35\linewidth]{sublevel_quarter} }
+\subfigure[$V(\vecx) \leq 1/10$]{ \includegraphics[width=.35\linewidth]{sublevel_tenth} }
 \end{figure}
 
 \end{frame}
@@ -861,7 +862,7 @@ E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
 \]
 
 \column{.35\linewidth}
-\includegraphics[width=\linewidth]{pic/Simple_gravity_pendulum.png}
+\includegraphics[width=\linewidth]{Simple_gravity_pendulum.png}
 
 \end{columns}
 
@@ -873,7 +874,7 @@ E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
 
 \begin{frame}
 \centering
-\includegraphics[width=.9\linewidth]{pic/pendulum_energy}
+\includegraphics[width=.9\linewidth]{pendulum_energy}
 \end{frame}
 
 

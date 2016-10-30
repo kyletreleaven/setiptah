@@ -44,13 +44,13 @@ def scrape_mathematician(math_html):
 	# thesis
 	thesis = main.find(id='thesisTitle').string
 
-	# advisors
-	advisors_tag = main.img.find_next('a').parent
-	advisors = advisors_tag.find_all('a')
+	# advisers
+	advisers_tag = main.img.find_next('a').parent
+	advisers = advisers_tag.find_all('a')
 
-	advisors = [
+	advisers = [
 		person_from_anchor(a)
-		for a in advisors
+		for a in advisers
 		]
 
 	# students
@@ -72,7 +72,7 @@ def scrape_mathematician(math_html):
 		location = _w(degree_loc),
 		year = degree_year,
 		thesis = _w(thesis),
-		advisors = advisors,
+		advisers = advisers,
 		students = students
 		)
 
@@ -89,10 +89,24 @@ KYLE = 188052
 EMILIO = 114748
 
 if __name__ == '__main__':
+	#import pickle
+	import json
 
-	person = download_mathematician(KYLE)
+	import argparse
+	parser = argparse.ArgumentParser()
+	#parser.add_argument('--reset',type=bool,action='store_true')
+	parser.add_argument('id', type=int)
+	parser.add_argument('filename', type=str)
 
-	print person
+	args = parser.parse_args()
+	
+	person = download_mathematician(args.id)
+
+	with open(args.filename,'w') as f:
+		json.dump(person,f)
+	#with open(args.filename,'w') as f:
+	#pickle.dump(person,f)
+
 
 
 	"""

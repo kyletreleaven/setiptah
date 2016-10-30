@@ -4,27 +4,15 @@ from flask import request
 
 import json
 
-import mathgene
+#import mathgene
+import mathgene_cache
+
 
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-	return render_template_string(page_template,person = PERSON)
-	#return json.dumps(PERSON)
-    #return "Hello World!"
-
-"""
-{"name": "Emilio Frazzoli", 
-"degree": "Ph.D.",
-"id": 114748, 
-"location": "UnitedStates",
-"thesis": "Robust Hybrid Control for Autonomous Vehicle Motion Planning",
-"year": 2001,
-"institution": "Massachusetts Institute of Technology"}
-"students": [{"id": 173538, "name": "Amit Bhatia"}, {"id": 168010, "name": "Sertac Karaman"}, {"id": 167876, "name": "Jerome Le Ny"}, {"id": 190986, "name": "Marco Pavone"}, {"id": 133492, "name": "Ketan Savla"}, {"id": 130959, "name": "Vikrant Sharma"}, {"id": 188052, "name": "Kyle Treleaven"}],
-"advisers": [{"id": 68471, "name": "Eric Marie Feron"}, {"id": 86014, "name": "Munther Abdullah Dahleh"}],
-"""
+    return "Hello World!"
 
 page_template = """
 <p>Hello, {{ person.name }} [{{ person.id }}]!</p>
@@ -60,25 +48,30 @@ page_template = """
 </ul>
 """
 
-def get_math(id):
-	return mathgene.download_mathematician(id)
-
 @app.route("/math")
 def math():
 	id = request.args.get('id', None)
 	id = int(id)
 
-	person = get_math(id)
+	person = CACHE.get_mathematician(id)
 	return render_template_string(page_template, person = person)
 
 
-
-
+"""
 with open('Emilio.json','r') as f:
 	PERSON = json.load(f)
-
+"""
 
 if __name__ == "__main__":
-	#person = get_math(mathgene.EMILIO)
+	import argparse
+	import pickle
 
+	parser = argparse.ArgumentParser()
+	#parser.add_argument('--reset',type=bool,action='store_true')
+	parser.add_argument('--cache', type=str, default='cache.pickle')
+	
+	args = parser.parse_args()
+
+	CACHE = mathgene_cache.MiniCache()
+	
 	app.run()

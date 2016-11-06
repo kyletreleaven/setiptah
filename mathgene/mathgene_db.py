@@ -23,6 +23,7 @@ CREATE TABLE %(adviserships)s (
 """
 
 import sqlite3 as db
+import networkx as nx
 
 class MathgeneCursor:
 	def __init__(self, cursor):
@@ -56,6 +57,23 @@ class MathgeneCursor:
 			rec['students'] = self.fetch_students(id)
 
 		return rec
+
+	def fetch_graph(self):
+		g = nx.DiGraph()
+
+		self._c.execute('SELECT * FROM mathematicians')
+		for tup in self._c.fetchall():
+			rec = self.record_form(tup)
+			id = rec['id']
+
+			g.add_node(id,data=rec)
+
+		self._c.execute('SELECT AdviserId, StudentId FROM adviserships')
+		for a, s in self._c.fetchall():
+			if g.has_node(a) and g.has_node(s):
+				g.add_edge(a,s)
+				
+		return g
 
 	def insert_math_record(self, rec):
 		tup = self.tuple_form(rec)

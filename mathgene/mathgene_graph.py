@@ -2,7 +2,7 @@
 from collections import deque
 import networkx as nx
 
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 class data: pass
 
@@ -36,8 +36,10 @@ if __name__ == '__main__':
 
 	graph = superc.fetch_graph()
 
-	#nx.draw(graph)
-	#plt.show()
+	labels = { id : rec['data']['name'] for id, rec in graph.nodes_iter(data=True) }
+
+	nx.draw(graph, labels=labels)
+	plt.show()
 
 
 

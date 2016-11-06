@@ -72,6 +72,7 @@ if __name__ == "__main__":
 	
 	args = parser.parse_args()
 
-	CACHE = mathgene_cache.MiniCache()
+	#CACHE = mathgene_cache.MiniCache()
+	CACHE = mathgene_cache.SQLiteCache(args.cache)
 	
 	app.run()

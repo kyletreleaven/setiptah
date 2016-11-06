@@ -13,58 +13,35 @@ class MiniCache:
 	def get_mathematician(self, id):
 		return mathgene.download_mathematician(id)
 
+
 class SQLiteCache:
 	def __init__(self, filename):
 		self._conn = sqlite3.connect(filename)
 
 	def get_mathematician(self, id):
 		c = self._conn.cursor()
-		c.execute('SELECT * FROM mathematicians WHERE Id=?', (id,) )
-		row = c.fetchone()
 
-		if row is None:
-			# download
-			row = mathgene.download_mathematician(id)
+		from mathgene_db import MathgeneCursor
+		superc = MathgeneCursor(c)
+
+		mathn = superc.fetch_mathematician(id)
+
+		if mathn is None:
+			# then download...
+			print 'downloading %d from internet' % id
+			mathn = mathgene.download_mathematician(id)
 
 			# and write to db!
-			def tupform(rec):
-				return (rec['id'], rec['name'], rec['degree'], rec['institution'], 
-					rec['location'], rec['year'], rec['thesis'])
-
-			tup = tupform(row)
-			print tup
-
-			c.execute('INSERT INTO mathematicians VALUES (?,?,?,?,?,?,?)', tup )
-			
-			# write "edges"
-			adviser_edges = [ (a['id'], row['id']) for a in row['advisers'] ]
-
-			print adviser_edges
-
-			c.executemany('INSERT INTO adviserships VALUES (?,?)', adviser_edges)
-
-			student_edges = [ (row['id'], s['id']) for s in row['students'] ]
-			c.executemany('INSERT INTO adviserships VALUES (?,?)', student_edges)
-
+			superc.insert_mathematician(mathn)
 			self._conn.commit()
 
 		else:
-			KEY_ORDER = ['id', 'name', 'degree', 'institution', 'location', 'year', 'thesis']
-			row = dict(zip(KEY_ORDER, row))
+			print 'found in local cache'
 
-			# then, add advisers
-			c.execute('SELECT Id,Name FROM adviserships INNER JOIN mathematicians ON Id=AdviserId WHERE StudentId=?', (row['id'],) )
-			row['advisers'] = [ dict(zip(['id','name'], tup)) for tup in c.fetchall() ]
-
-			# and students!
-			c.execute('SELECT Id,Name FROM adviserships INNER JOIN mathematicians ON Id=StudentId WHERE AdviserId=?', (row['id'],) )
-			row['students'] = [ dict(zip(['id','name'], tup)) for tup in c.fetchall() ]
-
-		return row
+		return mathn
 
 	def __del__(self):
 		self._conn.close()
-
 
 
 class Cache:

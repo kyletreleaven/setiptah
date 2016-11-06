@@ -1,0 +1,84 @@
+
+<html>
+
+<!-- Setting up the scene graph -->
+<svg width="800" height="600">
+
+<defs>
+  <linearGradient id="earthGradient" x1="0" y1="0" x2="100%" y2="0">
+      <stop offset="0%" stop-color="blue" />
+      <stop offset="100%" stop-color="green" />
+  </linearGradient>
+</defs>
+
+<g id="solarSystem" transform="translate(400,300)">
+
+  <!-- Sun stays right in the middle. -->
+  <circle x="0" y="0" r="50" fill="orange" />
+
+  <!-- Earth sub-system -->
+  <g id="orbitGroupEarthAroundSun">
+    <g id="distanceGroupSunToEarth" transform="translate(200,0)">
+
+      <g id="rotationGroupEarth">
+        <!-- for fun, do a blue-green gradient... -->
+        <!-- <rect x="-10" y="-10" width="20" height="20" fill="blue"/> -->
+        <rect x="-10" y="-10" width="20" height="20" fill="url(#earthGradient)"/>
+      </g>
+
+      <g id="orbitGroupMoonAroundEarth">
+        <g id="distanceGroupEarthToMoon" transform="translate(30,0)">
+          <circle r="10" fill="grey"/>
+        </g>
+      </g>
+
+    </g>
+  </g>
+</g>
+
+</svg>
+
+
+<script>
+
+function setTransform(element, x, y, angle) {
+  element.setAttribute("transform", "translate(" + x + "," + y + ") rotate(" + angle +")");
+}
+
+var start;
+
+var angleSunToEarth = 0;
+var angleEarthFrameToEarth = 0;
+var angleEarthFrameToMoon = 0;
+
+var dt = 10;
+var lunarMonth = 3;
+var year = 10;  // obviously this is supposed to be 365 in real life
+
+function step(timestamp) {
+  if (!start) {
+  	start = timestamp;
+  }
+
+  else {
+    var stepEarthRotation = dt;
+    var stepEarthRevolution = stepEarthRotation / year;
+    var stepMoonRevolution = stepEarthRotation / lunarMonth;
+
+    angleSunToEarth += stepEarthRevolution;
+    angleEarthFrameToEarth += stepEarthRotation;
+    angleEarthFrameToMoon += stepMoonRevolution;
+  }
+
+  var progress = timestamp - start;
+
+  setTransform( document.getElementById("orbitGroupEarthAroundSun"), 0, 0, angleSunToEarth );
+  setTransform( document.getElementById("rotationGroupEarth"), 0, 0, angleEarthFrameToEarth );
+  setTransform( document.getElementById("orbitGroupMoonAroundEarth"), 0, 0, angleEarthFrameToMoon );
+  
+  window.requestAnimationFrame(step);
+}
+
+window.requestAnimationFrame(step);
+</script>
+</html>

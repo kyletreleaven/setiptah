@@ -4,11 +4,18 @@ import scala.collection.mutable.{HashMap}
   * Created by horus on 1/10/2017.
   */
 
-case class Range(start: Int, end: Int) {
-  def length = end - start + 1
+object Util {
+  implicit class StringHelper(string: String) {
+    def lastIndex: Int = string.length() - 1
+  }
+
+  case class Range(start: Int, end: Int) {
+    def length = end - start + 1
+  }
 }
 
 object SuffixTrees {
+  import Util._
 
   // stateful stuff
   class Node {
@@ -75,40 +82,54 @@ object SuffixTrees {
     case _ => cursor
   }
 
+  def makeSuffixTree(string: String, progress: AlgorithmProgress, root: Node, cursor: Cursor)
+  : Node = {
+    // are these lazy?
+    val insertChar = string(progress.suffixRange.end)
 
-  def suffixTree(string: List[Char]): Node = {
-    val root = new Node
+    progress match {
 
-    // called per suffix --- gives back (state, next remainder)
-    def suffixAction(
-                      nextIndex: Int,
-                      state: LatentVariables,
-                      latestInsert: Option[Node])
-    : (LatentVariables, Int) = {
+      // chamber another character?
+      case AlgorithmProgress(index, 0) => {
+        if (index >= string.lastIndex) root
+        else makeSuffixTree(string, AlgorithmProgress(index + 1, 1), root, NodeCursor(root))
+      }
+
+      // do an operation on the graph?
+      case AlgorithmProgress(index, currentSuffix) => cursor match {
+
+        case NodeCursor(node) => {
+          val edgeOption = node.outEdges.get(insertChar)
+          edgeOption match {
+
+            // insert a new edge
+            case None => {
+              val newEdge = new Edge(index)
+              node.outEdges.update(insertChar, newEdge)
+
+              val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
+              val nextNode = node.suffixEdge   .map(_.targetNode)   .getOrElse(root)
+              makeSuffixTree(string, nextProgress, root, NodeCursor(nextNode))
+            }
+
+            // queue the suffix and move on
+            case Some(edge) => {
+              val nextProgress = AlgorithmProgress(index+1, currentSuffix+1)
+              val nextCursor = EdgeCursor(node, EdgePosition(insertChar,1))
+              makeSuffixTree(string, nextProgress, root, nextCursor)
+            }
+          }
+        }
+
+        case EdgeCursor(node, EdgePosition(rootChar, activeLength)) => {}
+      }
 
     }
-
-    def charAction(
-                    nextIndex: Int,
-                    state: LatentVariables)
-    : LatentVariables = {
-
-
-
-    }
-
-    val start = LatentVariables(root, None, 0)
-
-    // perform actions
-    (0 until string.length).foldLeft(start)((state, k) => charAction(k, state))
-
-    root
   }
 
-  def suffixTree(s: String): Node = {
-    val strExt: List[Char] = Nil
-      //s.toList .map(Simple) ++ Terminal
-    suffixTree(strExt)
+  def suffixTree(string: String): Node = {
+    val root = new Node
+    makeSuffixTree(string, AlgorithmProgress.start, root, NodeCursor(root))
   }
 
   def main(args: Array[String]): Unit = {

@@ -99,7 +99,7 @@ object SuffixTrees {
 
       // chamber another character?
       case AlgorithmProgress(index, 0) => {
-        if ( index + 1 >= string.length) root
+        if (index + 1 >= string.length) root
         else makeSuffixTree(string, AlgorithmProgress(index + 1, 1), root, NodeCursor(root), None)
       }
 
@@ -142,9 +142,16 @@ object SuffixTrees {
 
                 // setup next iteration
                 val nextNode = newNode.nextNode(root)
-                // this can be shortcutted; pretty sure
-                val nextCursor = EdgeCursor(nextNode, EdgePosition(rootChar, activeLength - 1))
                 val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
+
+                // compute next cursor
+                val nextCursor = activeLength - 1 match {
+                  case 0 => NodeCursor(nextNode)
+                  case nextActiveLength => {
+                    val nextSuffixHead = string(progress.suffixRange.start + 1)
+                    EdgeCursor(nextNode, EdgePosition(nextSuffixHead, nextActiveLength))
+                  }
+                }
 
                 makeSuffixTree(string, nextProgress, root, nextCursor, Some(node))
               }

@@ -19,8 +19,10 @@ object SuffixTrees {
 
   // stateful stuff
   class Node {
-    val outEdges = HashMap.empty[Char, Edge];
-    var suffixEdge: Option[SuffixEdge] = None;
+    val outEdges = HashMap.empty[Char, Edge]
+    var suffixEdge: Option[SuffixEdge] = None
+
+    def nextNode(default: Node) = suffixEdge   .map( _.targetNode ) .getOrElse(default)
   }
 
   class SuffixEdge(val targetNode: Node)
@@ -71,7 +73,7 @@ object SuffixTrees {
             val firstIndexAfterEdge = progress.suffixRange.start + edgeLength
             val branchChar: Char = string(firstIndexAfterEdge)
 
-            checkCursor(progress, string)(EdgeCursor(targetNode,EdgePosition(branchChar, activeLength-edgeLength)))
+            checkCursor(progress, string)(EdgeCursor(targetNode,EdgePosition(branchChar, activeLength - edgeLength)))
           }
         }
 
@@ -82,7 +84,45 @@ object SuffixTrees {
     case _ => cursor
   }
 
-  def makeSuffixTree(string: String, progress: AlgorithmProgress, root: Node, cursor: Cursor)
+  def suffixTree(string: String): Node = {
+    val root = new Node
+    makeSuffixTree(string, AlgorithmProgress.start, root, NodeCursor(root), None)
+  }
+
+  def splitEdge(edge: Edge, activeLength: Int,
+                newIndex: Int,
+                prefixNode: Option[Node],
+                string: String)
+  : Node = {
+
+    val newNode = new Node
+    val newEdge = new Edge(newIndex)
+
+    // algorithm is incorrect without this line!
+    // oldNode.suffixEdge = Some(new SuffixEdge(newNode))
+
+    val lowerStartIndex = edge.startIndex + activeLength
+
+    // edge gets shortened
+    var upperEdge = edge // just an alias
+    val lowerEdge = new Edge(lowerStartIndex)
+
+    lowerEdge.extent = edge.extent match {
+      case Leaf => Leaf
+      case Internal(edgeLength, targetNode) => Internal(edgeLength - activeLength, targetNode)
+    }
+    upperEdge.extent = Internal(activeLength, newNode)
+
+    val splitChar = string(lowerStartIndex)
+    newNode.outEdges.update(splitChar,lowerEdge)
+
+    val insertChar = string(newIndex)
+    newNode.outEdges.update(insertChar,newEdge)
+
+    newNode
+  }
+
+  def makeSuffixTree(string: String, progress: AlgorithmProgress, root: Node, cursor: Cursor, prefixNode: Option[Node])
   : Node = {
     // are these lazy?
     val insertChar = string(progress.suffixRange.end)
@@ -92,7 +132,7 @@ object SuffixTrees {
       // chamber another character?
       case AlgorithmProgress(index, 0) => {
         if (index >= string.lastIndex) root
-        else makeSuffixTree(string, AlgorithmProgress(index + 1, 1), root, NodeCursor(root))
+        else makeSuffixTree(string, AlgorithmProgress(index + 1, 1), root, NodeCursor(root), None)
       }
 
       // do an operation on the graph?
@@ -108,28 +148,66 @@ object SuffixTrees {
               node.outEdges.update(insertChar, newEdge)
 
               val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
-              val nextNode = node.suffixEdge   .map(_.targetNode)   .getOrElse(root)
-              makeSuffixTree(string, nextProgress, root, NodeCursor(nextNode))
+              val nextNode = node.suffixEdge.map(_.targetNode).getOrElse(root)
+              makeSuffixTree(string, nextProgress, root, NodeCursor(nextNode), None)
             }
 
             // queue the suffix and move on
             case Some(edge) => {
-              val nextProgress = AlgorithmProgress(index+1, currentSuffix+1)
-              val nextCursor = EdgeCursor(node, EdgePosition(insertChar,1))
-              makeSuffixTree(string, nextProgress, root, nextCursor)
+              val nextCursor = EdgeCursor(node, EdgePosition(insertChar, 1))
+              val nextProgress = AlgorithmProgress(index + 1, currentSuffix + 1)
+              makeSuffixTree(string, nextProgress, root, nextCursor, None)
             }
           }
         }
 
-        case EdgeCursor(node, EdgePosition(rootChar, activeLength)) => {}
+        case EdgeCursor(node, EdgePosition(rootChar, activeLength)) => {
+          val edge = node.outEdges(rootChar) // it must exist, or the algorithm is incorrect!
+
+          edge.extent match {
+
+            case Leaf => {
+              val newNode = splitEdge(edge, activeLength, index, prefixNode, string)
+
+              // setup next iteration
+              val nextNode = newNode.nextNode(root)
+              // this can be shortcutted; pretty sure
+              val nextCursor = EdgeCursor(nextNode, EdgePosition(rootChar, activeLength - 1))
+              val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
+
+              makeSuffixTree(string, nextProgress, root, nextCursor, Some(node))
+            }
+
+            case Internal(edgeLength, targetNode) => {
+
+              if (activeLength < edgeLength) {
+                val newNode = splitEdge(edge, activeLength, index, prefixNode, string)
+
+                // setup next iteration
+                val nextNode = newNode.nextNode(root)
+                // this can be shortcutted; pretty sure
+                val nextCursor = EdgeCursor(nextNode, EdgePosition(rootChar, activeLength - 1))
+                val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
+
+                makeSuffixTree(string, nextProgress, root, nextCursor, Some(node))
+              }
+
+              else if (activeLength == edgeLength) {
+                makeSuffixTree(string, progress, root, NodeCursor(targetNode), prefixNode)
+              }
+
+              else {
+                val firstIndexAfterEdge = progress.suffixRange.start + edgeLength
+                val branchChar: Char = string(firstIndexAfterEdge)
+
+                val nextCursor = EdgeCursor(targetNode, EdgePosition(branchChar, activeLength - edgeLength))
+                makeSuffixTree(string, progress, root, nextCursor, prefixNode)
+              }
+            }
+          }
+        }
       }
-
     }
-  }
-
-  def suffixTree(string: String): Node = {
-    val root = new Node
-    makeSuffixTree(string, AlgorithmProgress.start, root, NodeCursor(root))
   }
 
   def main(args: Array[String]): Unit = {

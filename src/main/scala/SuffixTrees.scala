@@ -4,6 +4,16 @@ import scala.collection.mutable.{HashMap}
   * Created by horus on 1/10/2017.
   */
 
+// Ukkonen's algorithm in scala, from http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english
+
+/*
+ Reference (naive) algorithm:
+ insert all suffixes at root; then, recursively: group (x :: xs) by x, i.e., by starting character;
+ then; collapse nodes with degree 2
+
+ comparing outputs is simple.
+  */
+
 object Util {
   implicit class StringHelper(string: String) {
     def lastIndex: Int = string.length() - 1
@@ -59,10 +69,7 @@ object SuffixTrees {
   }
 
   def splitEdge(edge: Edge, activeLength: Int,
-                newIndex: Int,
-                prefixNode: Option[Node],
-                string: String)
-  : Node = {
+                newIndex: Int, string: String): Node = {
 
     val newNode = new Node
     val newEdge = new Edge(newIndex)
@@ -135,46 +142,67 @@ object SuffixTrees {
           case EdgeCursor(node, EdgePosition(rootChar, activeLength)) => {
             val edge = node.outEdges(rootChar) // it must exist, or the algorithm is incorrect!
 
-            edge.extent match {
+            def splitAction(): Node = {
+              // do a split! does the newNode get used?
+              val newNode = splitEdge(edge, activeLength, index, string)
 
-              case Leaf => {
-                val newNode = splitEdge(edge, activeLength, index, prefixNode, string)
+              // TODO(ktreleav): this is probably where the suffix node gets connected?
+              prefixNode   .map( _.suffixEdge = Some(new SuffixEdge(newNode)) )
 
-                // setup next iteration
-                val nextNode = newNode.nextNode(root)
-                val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
+              // setup next iteration
+              val nextNode = node.nextNode(root) // is this always root?
+              val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
 
-                // compute next cursor
-                val nextCursor = activeLength - 1 match {
-                  case 0 => NodeCursor(nextNode)
-                  case nextActiveLength => {
-                    val nextSuffixHead = string(progress.suffixRange.start + 1)
-                    EdgeCursor(nextNode, EdgePosition(nextSuffixHead, nextActiveLength))
-                  }
+              // compute next cursor
+              val nextCursor = activeLength - 1 match {
+                case 0 => NodeCursor(nextNode)
+                case nextActiveLength => {
+                  val nextSuffixHead = string(progress.suffixRange.start + 1)
+                  EdgeCursor(nextNode, EdgePosition(nextSuffixHead, nextActiveLength))
                 }
+              }
 
-                makeSuffixTree(string, nextProgress, root, nextCursor, Some(node))
+              // Ukkonen says tail of suffix edge is the inserted node
+              makeSuffixTree(string, nextProgress, root, nextCursor, Some(newNode))
+            }
+
+            def properEdgeAction(): Node = {
+              val activeIndex = edge.startIndex + activeLength
+              val activeChar = string(activeIndex)
+
+              if (activeChar == insertChar) {
+                // kick the can down the road; e.g., don't propagate prefixNode
+                val nextProgress = AlgorithmProgress(index + 1, currentSuffix + 1)
+                val nextCursor = EdgeCursor(node, EdgePosition(rootChar, activeLength + 1))
+                // TODO(ktreleav): optimize since I know it's a leaf from here on!
+                makeSuffixTree(string, nextProgress, root, nextCursor, None)
+              }
+
+              else {
+                splitAction()
+              }
+            }
+
+            edge.extent match {
+              // any cursor on a leaf edge is a "proper" cursor
+              case Leaf => {
+                properEdgeAction()
               }
 
               case Internal(edgeLength, targetNode) => {
 
                 if (activeLength < edgeLength) {
-                  val newNode = splitEdge(edge, activeLength, index, prefixNode, string)
-
-                  // setup next iteration
-                  val nextNode = newNode.nextNode(root)
-                  // this can be shortcutted; pretty sure
-                  val nextCursor = EdgeCursor(nextNode, EdgePosition(rootChar, activeLength - 1))
-                  val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
-
-                  makeSuffixTree(string, nextProgress, root, nextCursor, Some(node))
+                  // a cursor whose activeLength is less than the edgeLength is also proper!
+                  properEdgeAction()
                 }
 
                 else if (activeLength == edgeLength) {
+                  // such cursor is actually pointing at the next node, isn't it...
                   makeSuffixTree(string, progress, root, NodeCursor(targetNode), prefixNode)
                 }
 
                 else {
+                  // cursor points beyond the target node; keep unwinding...
                   val firstIndexAfterEdge = progress.suffixRange.start + edgeLength
                   val branchChar: Char = string(firstIndexAfterEdge)
 

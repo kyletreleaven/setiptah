@@ -1,0 +1,43 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\begin{document}
+
+\newcommand{\location}{\mathbf{\rm x}}
+\newcommand{\loc}{\location}
+\newcommand{\velocity}{\mathbf{\rm v}}
+\newcommand{\vel}{\velocity}
+
+\newcommand{\sphereradius}{R}
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+A particle is traveling inside a sphere of radius $\sphereradius$ centered at the origin.
+The particle begins at position $\location_0$ inside the sphere with initial velocity $\velocity_0$.
+The sphere is anchored, and if the particle strikes it the collision is perfectly elastic. (Wikipedia it.)
+Provide a function to find the position of the particle after time $t \geq 0$.
+
+Helpful subproblem:  Find crossings of collisionless trajectory of the particle:
+
+Given: $\loc_0$, $\vel_0$, $\sphereradius$:
+
+$\location(t) = \location_0 + \velocity_0 t$
+
+$\norm{\location(t)} = \sphereradius \implies$
+
+$\location(t)^T \location(t) = \sphereradius^2$
+
+$\loc_0^T \loc_0 + 2 \vel_0^T \loc_0 t + t^2 \vel_0^T \vel_0 = \sphereradius^2$
+
+$t^2 (\vel_0^T \vel_0 ) + t ( 2 \vel_0^T \loc_0 ) + ( \loc_0^T \loc_0 - \sphereradius^2 ) = 0$
+
+Then, solve quadratic equation, with
+
+$a = \vel_0^T \vel_0$
+
+$b = 2 \vel_0^T \loc_0$
+
+$c = \loc_0^T \loc_0 - \sphereradius^2$
+
+\end{document}

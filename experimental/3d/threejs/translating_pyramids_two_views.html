@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - orbit controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color:#000;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+
+			}
+
+			a {
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="container"></div>
+		<div id="info">
+			<a href="http://threejs.org" target="_blank">three.js</a> - orbit controls example
+		</div>
+
+		<!-- <script src="../build/three.js"></script> -->
+		<script src="js/three.min.js"></script>
+
+		<script src="js/controls/OrbitControls.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+
+		<script>
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			function View(width, height) {
+				var renderer = new THREE.WebGLRenderer();
+				this.renderer = renderer;
+
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( width, height );
+
+				this.camera = new THREE.PerspectiveCamera( 60,
+					width/height, 
+					1, 1000 ); // these are scene specific...
+				this.camera.position.z = 500;
+			}
+
+			// scene
+			var scene;
+			var items = [];
+			var positions = [];
+			var axes = [];
+
+			// views
+			var view1, view2;
+			var camera, renderer;
+
+			var controls;
+			var stats;
+
+			var camera2, renderer2;
+			var controls2;
+
+			init();
+			animate();
+
+			function init() {
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+
+				var material =  new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
+
+				view1 = new View( window.innerWidth/2, window.innerHeight);
+				view2 = new View( window.innerWidth/2, window.innerHeight);
+
+				renderer = view1.renderer;				
+				renderer.setClearColor( scene.fog.color );
+
+				var container = document.getElementById( 'container' );
+				container.appendChild( renderer.domElement );
+				
+				renderer2 = view2.renderer;
+				container.appendChild( renderer2.domElement );
+
+				camera = view1.camera;
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.25;
+				controls.enableZoom = false;
+
+				// other camera
+				camera2 = view2.camera;
+				controls2 = new THREE.OrbitControls( camera2, renderer2.domElement );
+
+				// world
+
+				var geometry = new THREE.CylinderGeometry( 0, 10, 30, 4, 1 );
+
+				for ( var i = 0; i < 500; i ++ ) {
+					var mesh = new THREE.Mesh( geometry, material );
+					items.push(mesh);
+
+					var v = new THREE.Vector3();
+					v.x = ( Math.random() - 0.5 ) * 1000;
+					v.y = ( Math.random() - 0.5 ) * 1000;
+					v.z = ( Math.random() - 0.5 ) * 1000;
+					positions.push(v);
+
+					var axis = new THREE.Vector3();
+					axis.x = ( Math.random() - 0.5 ) * 1000;
+					axis.y = ( Math.random() - 0.5 ) * 1000;
+					axis.z = ( Math.random() - 0.5 ) * 1000;
+					axis.normalize();
+
+					axis.multiplyScalar( -Math.log(Math.random()) );
+					
+					axes.push(axis);
+
+					mesh.position.y = v.y;
+					mesh.position.z = v.z;
+					//mesh.position.y = ( Math.random() - 0.5 ) * 1000;
+					//mesh.position.z = ( Math.random() - 0.5 ) * 1000;
+					
+					//mesh.updateMatrix();
+					//mesh.matrixAutoUpdate = false;
+					scene.add( mesh );
+				}
+
+				// lights
+
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 1, 1, 1 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0x002288 );
+				light.position.set( -1, -1, -1 );
+				scene.add( light );
+
+				light = new THREE.AmbientLight( 0x222222 );
+				scene.add( light );
+
+				//
+
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+				var views = [ view1, view2 ];
+
+				var renderer, camera;
+
+				for (var k=0; k < views.length; k++) {
+					renderer = views[k].renderer;
+					camera = views[k].camera;
+
+					renderer.setSize( window.innerWidth / 2, window.innerHeight);
+					camera.aspect = window.innerWidth / 2 / window.innerHeight;
+					camera.updateProjectionMatrix();
+				}
+			}
+
+			function update() {
+				var d = 100 * Math.sin(Date.now() * .001);
+
+				for (var i=0; i<items.length; i++) {
+					var mesh = items[i];
+					
+					var v = positions[i];
+					var axis = axes[i];
+
+					var pos = new THREE.Vector3();
+					pos.add(axis);
+					pos.multiplyScalar(d);
+					pos.add(v);
+					
+					mesh.position.set(pos.x,pos.y,pos.z);
+
+					//mesh.position.x = v.x + d;
+
+					mesh.updateMatrix();
+				}
+
+				controls.update(); // required if controls.enableDamping = true, or if controls.autoRotate = true
+
+				controls2.update();
+
+				stats.update();
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				update();
+				render();
+			}
+
+			function render() {
+				renderer.render( scene, camera );
+				renderer2.render( scene, camera2);
+			}
+
+		</script>
+
+	</body>
+</html>

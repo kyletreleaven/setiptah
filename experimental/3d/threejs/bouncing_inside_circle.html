@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>three.js webgl - orbit controls</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				color: #000;
+				font-family:Monospace;
+				font-size:13px;
+				text-align:center;
+				font-weight: bold;
+
+				background-color: #fff;
+				margin: 0px;
+				overflow: hidden;
+			}
+
+			#info {
+				color:#000;
+				position: absolute;
+				top: 0px; width: 100%;
+				padding: 5px;
+
+			}
+
+			a {
+				color: red;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="container"></div>
+		<div id="info">
+			<a href="http://threejs.org" target="_blank">three.js</a> - orbit controls example
+		</div>
+
+		<!-- <script src="../build/three.js"></script> -->
+		<script src="js/three.min.js"></script>
+
+		<script src="js/controls/OrbitControls.js"></script>
+
+		<script src="js/Detector.js"></script>
+		<script src="js/libs/stats.min.js"></script>
+
+		<script src="module_template.js"></script>
+
+		<script>
+			function simulateWithoutSphere(x, v, tau) {
+				var result = new THREE.Vector3();
+				result.add(v);
+				result.multiplyScalar(tau);
+				result.add(x);
+				return result;
+			}
+
+			function quadraticEquationSecond(a,b,c) {
+				var disc = Math.sqrt( b*b - 4 * a * c );
+				return .5 * ( disc - b ) / a;
+			}
+
+			function simulateWithSphere(x, v, tau, R) {
+				// vecInside *must be inside
+				// R is sphere radius
+				var xf = simulateWithoutSphere(x,v,tau);
+
+				if ( xf.length() <= R ) {
+					return {
+						x: xf,
+						v: v
+					};
+				}
+
+				// otherwise --- recursion
+
+				// find time of escape... quadratic equation
+				var a = v.dot(v);
+				var b = 2 * v.dot(x);
+				var c = x.dot(x) - R*R;
+
+				var t1 = quadraticEquationSecond(a,b,c);
+				var x1 = simulateWithoutSphere(x, v, t1);
+
+				// get normal vector;
+				var u1 = new THREE.Vector3();
+				u1.copy(x1); u1.normalize();
+
+				var vNormal = new THREE.Vector3();
+				vNormal.copy(u1); vNormal.multiplyScalar( v.dot(u1) );
+
+				var vOrtho = new THREE.Vector3();
+				vOrtho.copy(v); vOrtho.sub(vNormal);
+
+				var v_ = new THREE.Vector3();
+				v_.copy(vOrtho); v_.sub(vNormal);
+
+				var x_ = x1;
+				var tau_ = tau - t1;
+
+				return simulateWithSphere(x_, v_, tau_, R);
+			}
+		</script>
+
+		<script>
+
+			if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+
+			function ControlView(width, height) {
+				var renderer = new THREE.WebGLRenderer();
+				this.renderer = renderer;
+
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( width, height );
+
+				var camera = new THREE.PerspectiveCamera( 60,
+					width/height, 
+					1, 1000 ); // these are scene specific...
+				this.camera = camera;
+
+				this.camera.position.z = 500;
+
+				var controls = new THREE.OrbitControls( camera, renderer.domElement );
+				this.controls = controls;
+
+				//controls.addEventListener( 'change', render ); // add this only if there is no animation loop (requestAnimationFrame)
+				controls.enableDamping = true;
+				controls.dampingFactor = 0.25;
+				controls.enableZoom = false;
+			}
+
+			// scene
+			var scene;
+			var items = [];
+			var positions = [];
+			var axes = [];
+
+			var sphereRadius = 250;
+
+			// views
+			var view1, view2;
+			var camera, renderer;
+
+			var controls;
+			var stats;
+
+			var camera2, renderer2;
+			var controls2;
+
+			init();
+			animate();
+
+			var foo = SNOWGLOBE.version();
+
+			function init() {
+
+				scene = new THREE.Scene();
+				scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+
+				view1 = new ControlView( window.innerWidth/2, window.innerHeight);
+				view2 = new ControlView( window.innerWidth/2, window.innerHeight);
+
+				renderer = view1.renderer;				
+				renderer.setClearColor( scene.fog.color );
+
+				var container = document.getElementById( 'container' );
+				container.appendChild( renderer.domElement );
+				
+				renderer2 = view2.renderer;
+				container.appendChild( renderer2.domElement );
+
+				// scene
+				var geometry = new THREE.SphereGeometry(3,32,32);
+				var material =  new THREE.MeshPhongMaterial( { color:0xffffff, shading: THREE.FlatShading } );
+
+				//var geometry = new THREE.CylinderGeometry( 0, 10, 30, 4, 1 );
+
+				var perimGeometry = new THREE.SphereGeometry(sphereRadius, 100, 100);
+				var perimMaterial = new THREE.MeshPhongMaterial( {
+					color:0xffffff,
+					transparent: true,
+					opacity: .25,
+					shading: THREE.FlatShading
+				});
+
+				var perimMesh = new THREE.Mesh(perimGeometry, perimMaterial);
+				scene.add(perimMesh);
+
+				var discGeom = new THREE.CircleGeometry(sphereRadius, 64);
+				var discMaterial = new THREE.MeshBasicMaterial({
+				//var discMaterial = new THREE.MeshPhongMaterial({
+					color: 0xffff00,
+					//transparent:true,
+					//opacity:.25,
+					//shading: THREE.FlatShading
+				});
+
+				var discMesh = new THREE.Mesh(discGeom,discMaterial);
+
+				scene.add(discMesh);
+				scene.position.x = 0;
+				scene.position.y = 0;
+				scene.position.z = 0;
+
+
+				var numberOfBalls = 10;
+				for ( var i = 0; i < numberOfBalls; i ++ ) {
+					var mesh = new THREE.Mesh( geometry, material );
+					items.push(mesh);
+
+					var v = new THREE.Vector3();
+					v.x = ( Math.random() - 0.5 ) * 200;
+					v.y = ( Math.random() - 0.5 ) * 200;
+					//v.z = ( Math.random() - 0.5 ) * 200;
+					v.z = 0;
+
+					//v.x = 0; v.y = 0; v.z = 0;
+					positions.push(v);
+
+					var axis = new THREE.Vector3();
+					axis.x = ( Math.random() - 0.5 ) * 1000;
+					axis.y = ( Math.random() - 0.5 ) * 1000;
+					//axis.z = ( Math.random() - 0.5 ) * 1000;
+					axis.z = 0;
+					axis.normalize();
+
+					axis.multiplyScalar( -Math.log(Math.random()) );
+					
+					axes.push(axis);
+
+					mesh.position.y = v.y;
+					mesh.position.z = v.z;
+					//mesh.position.y = ( Math.random() - 0.5 ) * 1000;
+					//mesh.position.z = ( Math.random() - 0.5 ) * 1000;
+					
+					//mesh.updateMatrix();
+					//mesh.matrixAutoUpdate = false;
+					scene.add( mesh );
+				}
+
+				// lights
+
+				light = new THREE.DirectionalLight( 0xffffff );
+				light.position.set( 1, 1, 1 );
+				scene.add( light );
+
+				light = new THREE.DirectionalLight( 0x002288 );
+				light.position.set( -1, -1, -1 );
+				scene.add( light );
+
+				light = new THREE.AmbientLight( 0x222222 );
+				scene.add( light );
+
+				//
+
+				stats = new Stats();
+				container.appendChild( stats.dom );
+
+				//
+
+				window.addEventListener( 'resize', onWindowResize, false );
+
+			}
+
+			function onWindowResize() {
+				var views = [ view1, view2 ];
+
+				var renderer, camera;
+
+				for (var k=0; k < views.length; k++) {
+					renderer = views[k].renderer;
+					camera = views[k].camera;
+
+					renderer.setSize( window.innerWidth / 2, window.innerHeight);
+					camera.aspect = window.innerWidth / 2 / window.innerHeight;
+					camera.updateProjectionMatrix();
+				}
+			}
+
+			function updatePositions(elapsed) {
+				var d = 100 * Math.sin(Date.now() * .001);
+
+				for (var i=0; i<items.length; i++) {
+					var mesh = items[i];
+					
+					var v = positions[i];
+					var axis = axes[i];
+
+					var pos = new THREE.Vector3();
+					pos.add(axis);
+					pos.multiplyScalar(d);
+					pos.add(v);
+					
+					mesh.position.set(pos.x,pos.y,pos.z);
+
+					//mesh.position.x = v.x + d;
+
+					mesh.updateMatrix();
+				}
+			}
+
+
+			function updatePositions2(elapsed) {
+				//var d = 100 * Math.sin(Date.now() * .001);
+
+				for (var i=0; i<items.length; i++) {
+					var mesh = items[i];
+
+					var x = positions[i];
+					var v = axes[i];
+
+					var result = simulateWithSphere(x, v, elapsed, sphereRadius);
+
+					positions[i] = result.x;
+					axes[i] = result.v;
+
+					mesh.position.set(result.x.x, result.x.y, result.x.z);
+
+					mesh.updateMatrix();
+				}
+			}
+
+			function update() {
+				updatePositions2(1);
+
+				var views = [ view1, view2 ];
+				for (var k=0; k < views.length; k++) {
+					var controls = views[k].controls;
+					controls.update();
+				}
+
+				stats.update();
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				update();
+				render();
+			}
+
+			function render() {
+				var views = [ view1, view2 ];
+				for (var k=0; k < views.length; k++) {
+					var renderer = views[k].renderer;
+					var camera = views[k].camera;
+					renderer.render( scene, camera );
+				}
+			}
+
+		</script>
+
+	</body>
+</html>

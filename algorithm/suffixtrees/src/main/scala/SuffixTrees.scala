@@ -146,7 +146,7 @@ object SuffixTrees {
               // do a split! does the newNode get used?
               val newNode = splitEdge(edge, activeLength, index, string)
 
-              // TODO(ktreleav): this is probably where the suffix node gets connected?
+              // connect from any previously inserted node
               prefixNode   .map( _.suffixEdge = Some(new SuffixEdge(newNode)) )
 
               // setup next iteration
@@ -217,8 +217,12 @@ object SuffixTrees {
     }
   }
 
+
   def main(args: Array[String]): Unit = {
     println("Hello")
+
+
+
 
     println(suffixTree("Hello"))
   }

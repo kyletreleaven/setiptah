@@ -4,13 +4,13 @@
 class SuffixTreesTest extends org.scalatest.FunSuite {
   import SuffixTrees._
 
-  test("Suffix tree empty string is single-node") {
+  test("Suffix tree on empty string is simple node") {
     val tree = suffixTree("")
     assert( tree.outEdges.isEmpty )
   }
 
   test("Suffix tree one char doesn't crash") {
-    val tree = suffixTree("0")
+    val tree = suffixTree("A")
   }
 
   test("Suffix tree 'A' has one leaf edge rooted at 'A'") {
@@ -38,19 +38,28 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
     assert(tree.outEdges.size == 2)
   }
 
-  test("Long string that ends in unique character") {
-    val string = "AAABCDEFGHIABGHSJASKLJFAIEOJASDKJEAFGADADSJFL_"
-    val tree = suffixTree(string)
+  test("Long string that ends in unique character doesn't crash") {
+    val string = "AAABCDEFGHIABGHSJASKLJFAIEOJASDKJEAFGADADSJFL"
 
-    assert(true)
-  }
-  /*
-  test("Suffix tree has root out-degree equal to number of distinct characters") {
-    for ( string <- List("ABAC", "ABCDEFG", "AAAA" ) ) {
-      val tree = suffixTree(string)
-      val distinct = Set[Char]() ++ string
-      assert(tree.outEdges.size == distinct.size)
+    for (n <- 0 to string.length) {
+      val substr = string.substring(0, n) + "$"
+
+      val tree = suffixTree(substr)
+
+      println("%s fine...".format(substr))
     }
   }
-  */
+
+  test("Long string that ends in unique character doesn't crash; but did until final character...") {
+    val string = "AAABCDEFGHIAB$"
+    val tree = suffixTree(string)
+  }
+
+  // can I define a parameterized "class" of tests such as below, and run special cases?
+  test("Suffix tree has root out-degree equal to number of distinct characters") {
+    val string = "LASIJWEIAGAJRPGAFDSF"
+    val tree = suffixTree(string)
+    val distinct = Set[Char]() ++ string
+    assert(tree.outEdges.size == distinct.size)
+  }
 }

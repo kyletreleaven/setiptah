@@ -32,7 +32,49 @@ object SuffixTrees {
     val outEdges = HashMap.empty[Char, Edge]
     var suffixEdge: Option[SuffixEdge] = None
 
-    def nextNode(default: Node) = suffixEdge   .map( _.targetNode ) .getOrElse(default)
+    def nextNode(default: Node) = suffixEdge.map(_.targetNode).getOrElse(default)
+
+    def readable(string: String)
+    : String = graphmap(string).toString()
+
+    def graphmap(string: String): Node2 = {
+      val node = new Node2
+
+      node.edges = outEdges map {
+        case (c: Char, edge: Edge) => {
+          val prefixStart = edge.startIndex
+
+          edge.extent match {
+
+            case Leaf => {
+              val prefixEnd = string.length
+              (string.substring(prefixStart, prefixEnd), new Node2)
+            }
+
+            case Internal(length, target) => {
+              val prefixEnd = prefixStart + length
+              (string.substring(prefixStart, prefixEnd),
+                target.graphmap(string))
+            }
+          }
+        }
+      }
+
+      node
+    }
+  }
+
+  class Node2 {
+    var edges = HashMap.empty[String, Node2]
+
+    override def toString: String = {
+      if (edges.size == 0) {
+        "nil"
+      }
+      else {
+        edges   .mapValues( _.toString )   .toString
+      }
+    }
   }
 
   class SuffixEdge(val targetNode: Node)
@@ -139,27 +181,35 @@ object SuffixTrees {
             }
           }
 
-          case EdgeCursor(node, EdgePosition(rootChar, activeLength)) => {
+          case EdgeCursor(node, edgePos) => {
+            val EdgePosition(rootChar, activeLength) = edgePos
             val edge = node.outEdges(rootChar) // it must exist, or the algorithm is incorrect!
 
             def splitAction(): Node = {
               // do a split! does the newNode get used?
               val newNode = splitEdge(edge, activeLength, index, string)
-
               // connect from any previously inserted node
               prefixNode   .map( _.suffixEdge = Some(new SuffixEdge(newNode)) )
 
-              // setup next iteration
+              // setup the next iteration
               val nextNode = node.nextNode(root) // is this always root?
               val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
 
-              // compute next cursor
-              val nextCursor = activeLength - 1 match {
-                case 0 => NodeCursor(nextNode)
-                case nextActiveLength => {
-                  val nextSuffixHead = string(progress.suffixRange.start + 1)
-                  EdgeCursor(nextNode, EdgePosition(nextSuffixHead, nextActiveLength))
+              // compute next cursor: root or non root?
+              // this was the last remaining bug:
+              // I just didn't remember from the "rules" that root and non-root have different behavior...
+              // tests helped greatly here!
+              val nextCursor = if ( node == root ) {
+                activeLength - 1 match {
+                  case 0 => NodeCursor(nextNode)
+                  case nextActiveLength => {
+                    val nextSuffixHead = string(progress.suffixRange.start + 1)
+                    EdgeCursor(nextNode, EdgePosition(nextSuffixHead, nextActiveLength))
+                  }
                 }
+              }
+              else {
+                EdgeCursor(nextNode, edgePos)
               }
 
               // Ukkonen says tail of suffix edge is the inserted node
@@ -217,13 +267,4 @@ object SuffixTrees {
     }
   }
 
-
-  def main(args: Array[String]): Unit = {
-    println("Hello")
-
-
-
-
-    println(suffixTree("Hello"))
-  }
 }

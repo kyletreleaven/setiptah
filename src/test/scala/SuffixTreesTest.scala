@@ -51,15 +51,57 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
   }
 
   test("Long string that ends in unique character doesn't crash; but did until final character...") {
-    val string = "AAABCDEFGHIAB$"
+    //val string = "AAABCDEFGHIAB$"
+    //val string = "AAABCAB$"
+
+    //val string = "ABCAB$" // PASSES!
+    val string = "TRELEAVEN$"
+
     val tree = suffixTree(string)
+
+    println(tree.readable(string))
+
+    val tree_graph = tree.graphmap(string)
+    println( flatten(tree_graph) )
+
+    writeDotGraph(tree_graph)
   }
+
+  def flatten(node: Node2): List[Node2] = {
+    List(node) ++ node.edges.values   .flatMap( flatten )
+  }
+
+  def listEdges(node: Node2): Unit = {
+    val nodes = flatten(node)
+    val nodeMap = nodes.zipWithIndex   .toMap
+
+    for ( i: Node2 <- nodes; (e: String,j: Node2) <- i.edges ) {
+      println("%d -(%s)->%d".format(nodeMap(i), e, nodeMap(j)))
+    }
+  }
+
+  def writeDotGraph(node: Node2): Unit = {
+    val nodes = flatten(node)
+    val nodeMap = nodes.zipWithIndex   .toMap
+
+    println("digraph MYGRAPH{")
+    for ( i: Node2 <- nodes; (e: String,j: Node2) <- i.edges ) {
+      //println("%d -(%s)->%d".format(nodeMap(i), e, nodeMap(j)))
+      println("\t%d -> %d [label=\"%s\"]".format(nodeMap(i), nodeMap(j), e))
+    }
+    println("}")
+  }
+
+
+  // how would we test: Every internal node is associated with a suffix link? Is that supposed to be true?
 
   // can I define a parameterized "class" of tests such as below, and run special cases?
   test("Suffix tree has root out-degree equal to number of distinct characters") {
-    val string = "LASIJWEIAGAJRPGAFDSF"
+    val string = "LASIJWEIAGAJRPGAFDSF$"
     val tree = suffixTree(string)
     val distinct = Set[Char]() ++ string
     assert(tree.outEdges.size == distinct.size)
+
+    println( tree.readable(string) )
   }
 }

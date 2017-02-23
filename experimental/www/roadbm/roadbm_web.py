@@ -24,7 +24,7 @@ if __name__ == "__main__":
 	request_json = dict(query=json.dumps(inst_json))
 
 	# call the app!
-	url = 'http://localhost:5000'
+	url = 'http://localhost:5000/igraph'
 	res = requests.get(url, params=request_json)
 
 	match = json.loads(res.content)

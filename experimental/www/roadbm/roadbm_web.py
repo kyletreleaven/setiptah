@@ -10,13 +10,14 @@ import roadbm_json
 
 if __name__ == "__main__":
 
-
 	roadmap = nx.MultiDiGraph()
 	roadmap.add_edge(0, 1, 'road1')
 
 	layout = {
-		0: (1,0),
-		1: (0,1),
+		0: (0,0),
+		1: (100,100),
+		2: (0,100),
+		3: (100,0),
 	}
 
 	S = [ ('road1', random.random()) for k in xrange(10) ]
@@ -32,8 +33,8 @@ if __name__ == "__main__":
 	url = 'http://localhost:5000/igraph'
 	res = requests.get(url, params=request_json)
 
-	match = json.loads(res.content)
-
-	print match
+	print res.content
+	#match = json.loads(res.content)
+	#print match
 
 	#print res.data

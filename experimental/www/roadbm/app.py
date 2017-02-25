@@ -83,11 +83,53 @@ def euclidean_roads_bipartite_match_svg():
 		return jsonify((graph_repr, other_pos_repr))
 
 	else :
-		pass
+		return draw_interval_graph(interval_graph, layout_)
 
 def draw_interval_graph(interval_graph, layout):
 	# we can figure out scaling, etc., later
-	pass
+	# create XML 
+	root = etree.Element('svg', attrib=dict(width='100', height='100'))
+
+	def make_line(x0,xf, width):
+		(x1,y1) = x0
+		(x2,y2) = xf
+		return etree.Element('line', attrib=dict(
+			x1=repr(x1), y1=repr(y1), x2=repr(x2), y2=repr(y2),
+			style='stroke:rgb(0,0,0);stroke-width:%d' % width
+			)
+		)
+
+	def write_X(p):
+		x, y = p
+		text = etree.Element('text', attrib=dict(
+			x=x, y=y, fill='red')
+		)
+		text.text = 'X'
+		return text
+
+	def write_O(p):
+		x, y = p
+		text = etree.Element('text', attrib=dict(
+			x=x, y=y, fill='blue')
+		)
+		text.text = 'O'
+		return text
+
+	for u, v, data in interval_graph.edges_iter(data=True):
+		if 'score' not in data: continue
+		root.append(make_line(layout[u], layout[v], data.get('score')))
+
+	for u, pos in layout:
+		if len(u) == 2:
+			type_, _ = u
+			if type_ == 'S':
+				root.append(write_X(pos))
+			elif type_ == 'T':
+				root.append(write_O(pos))
+
+	# pretty string
+	return etree.tostring(root, pretty_print=True)
+
 
 if __name__ == "__main__":
 	app.run()

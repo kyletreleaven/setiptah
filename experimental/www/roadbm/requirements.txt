@@ -2,5 +2,7 @@ flask
 requests
 lxml
 
+scipy	# app doesn't need it, the example did
+
 -e git+https://github.com/kyletreleaven/roadgeometry.git#egg=roadgeometry
 -e git+https://github.com/kyletreleaven/roadgeometry-matching.git#egg=roadbm

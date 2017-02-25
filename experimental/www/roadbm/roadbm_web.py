@@ -2,10 +2,14 @@
 import random
 import json
 
+import numpy as np
 import networkx as nx
 import requests
 
 import roadbm_json
+
+from setiptah.roadgeometry import generation
+from setiptah.roadgeometry import probability
 
 
 if __name__ == "__main__":
@@ -13,19 +17,26 @@ if __name__ == "__main__":
 	roadmap = nx.MultiDiGraph()
 	roadmap.add_edge(0, 1, 'road1')
 
-	layout = {
-		0: (0,0),
-		1: (100,100),
-		2: (0,100),
-		3: (100,0),
-	}
+	scale = np.array([400,300])
+	interchanges = [ scale * np.random.rand(2) for i in xrange(10) ]
 
-	S = [ ('road1', random.random()) for k in xrange(10) ]
-	T = [ ('road1', random.random()) for k in xrange(10) ]
+	layout = { k: pos for k, pos in enumerate(interchanges) }
+	roadmap = generation.DelaunayRoadMap(interchanges)
 
-	inst = roadbm_json.RoadMatchInstanceEuclidean.from_args(S, T, roadmap, layout)
+	distr = probability.UniformDist(roadmap)
+
+	S = [ distr.sample() for k in xrange(20) ]
+	T = [ distr.sample() for k in xrange(20) ]
+
+	# shake loose the numpy ints, wtf.
+	roadmap_ = nx.MultiDiGraph()
+	for u, v, key in roadmap.edges_iter(keys=True):
+		roadmap_.add_edge(int(u), int(v), key)
+	inst = roadbm_json.RoadMatchInstanceEuclidean.from_args(S, T, roadmap_, layout)
 
 	inst_json = inst.json()
+
+	print json.dumps(inst_json, indent=2)
 
 	request_json = dict(query=json.dumps(inst_json))
 

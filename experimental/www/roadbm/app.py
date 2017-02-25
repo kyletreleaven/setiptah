@@ -74,8 +74,9 @@ def euclidean_roads_bipartite_match_svg():
 
 	match = bm.ROADSBIPARTITEMATCH(S, T, roadmap_)
 
-	interval_graph, layout_ = matchvis_util.INTERVAL_GRAPH(match, S, T, roadmap, layout)
-
+	print roadmap_.edge
+	interval_graph, layout_ = matchvis_util.INTERVAL_GRAPH(match, S, T, roadmap_, layout)
+	
 	# turn it into an SVG!
 	if False:
 		graph_repr = [ '%s -> %s' % (repr(u), repr(v)) for u, v in interval_graph.edges_iter() ]
@@ -88,7 +89,11 @@ def euclidean_roads_bipartite_match_svg():
 def draw_interval_graph(interval_graph, layout):
 	# we can figure out scaling, etc., later
 	# create XML 
-	root = etree.Element('svg', attrib=dict(width='100', height='100'))
+
+	# this needs to be passed in
+	width = 400
+	height = 300
+	root = etree.Element('svg', attrib=dict(width=repr(width), height=repr(height)))
 
 	def make_line(x0,xf, width):
 		(x1,y1) = x0

@@ -4,6 +4,7 @@ from flask import request
 from flask import jsonify
 
 import json
+from lxml import etree
 
 # domain
 import roadbm_json
@@ -34,8 +35,28 @@ def roads_bipartite_match():
 
 	return jsonify(match)
 
+@app.route('/picture', methods=['GET'])
+def my_pretty_picture():
+	# create XML 
+	root = etree.Element('svg', attrib=dict(width='100', height='100'))
+
+	def make_line(x0,xf, style):
+		(x1,y1) = x0
+		(x2,y2) = xf
+		return etree.Element('line', attrib=dict(
+			x1=repr(x1), y1=repr(y1), x2=repr(x2), y2=repr(y2),
+			style=style)
+		)
+
+	line = make_line((0,0), (50,100), "stroke:rgb(255,0,0);stroke-width:2")
+	root.append(line)
+
+	# pretty string
+	return etree.tostring(root, pretty_print=True)
+
+
 @app.route('/igraph', methods=['GET'])
-def roads_bipartite_match_interval_graph():
+def euclidean_roads_bipartite_match_svg():
 	data = { key: value for key, value in request.args.iteritems() }
 
 	query_json = data['query']
@@ -55,12 +76,18 @@ def roads_bipartite_match_interval_graph():
 
 	interval_graph, layout_ = matchvis_util.INTERVAL_GRAPH(match, S, T, roadmap, layout)
 
-	#print interval_graph.edge
-	
-	graph_repr = [ '%s -> %s' % (repr(u), repr(v)) for u, v in interval_graph.edges_iter() ]
-	other_pos_repr = { repr(u): repr(p) for u, p in layout_.iteritems() }
-	return jsonify((graph_repr, other_pos_repr))
+	# turn it into an SVG!
+	if False:
+		graph_repr = [ '%s -> %s' % (repr(u), repr(v)) for u, v in interval_graph.edges_iter() ]
+		other_pos_repr = { repr(u): repr(p) for u, p in layout_.iteritems() }
+		return jsonify((graph_repr, other_pos_repr))
 
+	else :
+		pass
+
+def draw_interval_graph(interval_graph, layout):
+	# we can figure out scaling, etc., later
+	pass
 
 if __name__ == "__main__":
 	app.run()

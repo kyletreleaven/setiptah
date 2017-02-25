@@ -17,8 +17,8 @@ if __name__ == "__main__":
 	roadmap = nx.MultiDiGraph()
 	roadmap.add_edge(0, 1, 'road1')
 
-	scale = np.array([400,300])
-	interchanges = [ scale * np.random.rand(2) for i in xrange(10) ]
+	scale = np.array([800,600])
+	interchanges = [ scale * np.random.rand(2) for i in xrange(15) ]
 
 	layout = { k: pos for k, pos in enumerate(interchanges) }
 	roadmap = generation.DelaunayRoadMap(interchanges)
@@ -45,7 +45,12 @@ if __name__ == "__main__":
 	res = requests.get(url, params=request_json)
 
 	print res.content
-	#match = json.loads(res.content)
-	#print match
 
-	#print res.data
+	# convenience
+	filename = 'example.html'
+	with open(filename, 'w') as f:
+		f.write(res.content)
+
+	import webbrowser
+	webbrowser.open_new_tab(filename)
+	

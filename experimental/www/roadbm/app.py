@@ -76,7 +76,9 @@ def euclidean_roads_bipartite_match_svg():
 
 	print roadmap_.edge
 	interval_graph, layout_ = matchvis_util.INTERVAL_GRAPH(match, S, T, roadmap_, layout)
-	
+
+	print layout_
+
 	# turn it into an SVG!
 	if False:
 		graph_repr = [ '%s -> %s' % (repr(u), repr(v)) for u, v in interval_graph.edges_iter() ]
@@ -84,30 +86,43 @@ def euclidean_roads_bipartite_match_svg():
 		return jsonify((graph_repr, other_pos_repr))
 
 	else :
-		return draw_interval_graph(interval_graph, layout_)
+		return draw_interval_graph(interval_graph, layout_, roadmap, layout)
 
-def draw_interval_graph(interval_graph, layout):
+
+def draw_interval_graph(interval_graph, layout, roadmap, road_layout):
 	# we can figure out scaling, etc., later
 	# create XML 
 
 	# this needs to be passed in
-	width = 400
-	height = 300
+	width = 800
+	height = 600
 	root = etree.Element('svg', attrib=dict(width=repr(width), height=repr(height)))
 
-	def make_line(x0,xf, width):
+	def make_road(x0,xf):
 		(x1,y1) = x0
 		(x2,y2) = xf
 		return etree.Element('line', attrib=dict(
 			x1=repr(x1), y1=repr(y1), x2=repr(x2), y2=repr(y2),
-			style='stroke:rgb(0,0,0);stroke-width:%d' % width
+			style='stroke:rgb(0,256,0);stroke-width:1'
+			)
+		)
+
+	for u, v, in roadmap.edges_iter():
+		root.append(make_road(road_layout[u], road_layout[v]))
+
+	def make_match(x0,xf, width):
+		(x1,y1) = x0
+		(x2,y2) = xf
+		return etree.Element('line', attrib=dict(
+			x1=repr(x1), y1=repr(y1), x2=repr(x2), y2=repr(y2),
+			style='stroke:rgb(0,0,0);stroke-width:%d' % (2 * width)
 			)
 		)
 
 	def write_X(p):
 		x, y = p
 		text = etree.Element('text', attrib=dict(
-			x=x, y=y, fill='red')
+			x=repr(x), y=repr(y), fill='red')
 		)
 		text.text = 'X'
 		return text
@@ -115,22 +130,21 @@ def draw_interval_graph(interval_graph, layout):
 	def write_O(p):
 		x, y = p
 		text = etree.Element('text', attrib=dict(
-			x=x, y=y, fill='blue')
+			x=repr(x), y=repr(y), fill='blue')
 		)
 		text.text = 'O'
 		return text
 
 	for u, v, data in interval_graph.edges_iter(data=True):
 		if 'score' not in data: continue
-		root.append(make_line(layout[u], layout[v], data.get('score')))
+		root.append(make_match(layout[u], layout[v], data.get('score')))
 
-	for u, pos in layout:
-		if len(u) == 2:
-			type_, _ = u
-			if type_ == 'S':
-				root.append(write_X(pos))
-			elif type_ == 'T':
-				root.append(write_O(pos))
+	for u, pos in layout.iteritems():
+		type_, _ = u
+		if type_ == 'S':
+			root.append(write_X(pos))
+		elif type_ == 'T':
+			root.append(write_O(pos))
 
 	# pretty string
 	return etree.tostring(root, pretty_print=True)

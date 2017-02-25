@@ -13,6 +13,7 @@ import numpy as np
 import setiptah.roadbm.bm as bm
 from setiptah.roadbm import matchvis_util
 
+import euclidean_roadmap
 
 app = Flask(__name__)
 
@@ -40,21 +41,24 @@ def roads_bipartite_match_interval_graph():
 	query_json = data['query']
 	query = json.loads(query_json)
 
-	inst = roadbm_json.RoadMatchInstance.from_json(query)
+	inst = roadbm_json.RoadMatchInstanceEuclidean.from_json(query)
 
 	S = inst.source_points()
 	T = inst.target_points()
 	roadmap = inst.get_roadmap()
+	layout = inst.get_layout()
+	layout = { u: np.array(p) for u, p in layout.iteritems() }
 
-	match = bm.ROADSBIPARTITEMATCH(S, T, roadmap)
+	roadmap_ = euclidean_roadmap.euclidean_roadmap(roadmap, layout)
 
-	import random
-	# just to see the interface working
-	pos = { u: np.array([random.random(), random.random()]) for u in roadmap.nodes_iter() }
-	Igraph, other_pos = matchvis_util.INTERVAL_GRAPH(match, S, T, roadmap, pos, length_attr='length')
+	match = bm.ROADSBIPARTITEMATCH(S, T, roadmap_)
 
-	graph_repr = [ '%s -> %s' % (repr(u), repr(v)) for u, v in Igraph.edges_iter() ]
-	other_pos_repr = { repr(u): repr(p) for u, p in other_pos.iteritems() }
+	interval_graph, layout_ = matchvis_util.INTERVAL_GRAPH(match, S, T, roadmap, layout)
+
+	#print interval_graph.edge
+	
+	graph_repr = [ '%s -> %s' % (repr(u), repr(v)) for u, v in interval_graph.edges_iter() ]
+	other_pos_repr = { repr(u): repr(p) for u, p in layout_.iteritems() }
 	return jsonify((graph_repr, other_pos_repr))
 
 

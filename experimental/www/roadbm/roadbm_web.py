@@ -12,12 +12,17 @@ if __name__ == "__main__":
 
 
 	roadmap = nx.MultiDiGraph()
-	roadmap.add_edge(0, 1, 'road1', length=1.)
+	roadmap.add_edge(0, 1, 'road1')
+
+	layout = {
+		0: (1,0),
+		1: (0,1),
+	}
 
 	S = [ ('road1', random.random()) for k in xrange(10) ]
 	T = [ ('road1', random.random()) for k in xrange(10) ]
 
-	inst = roadbm_json.RoadMatchInstance.from_args(S, T, roadmap)
+	inst = roadbm_json.RoadMatchInstanceEuclidean.from_args(S, T, roadmap, layout)
 
 	inst_json = inst.json()
 
@@ -31,6 +36,4 @@ if __name__ == "__main__":
 
 	print match
 
-
 	#print res.data
-

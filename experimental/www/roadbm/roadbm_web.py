@@ -17,7 +17,8 @@ if __name__ == "__main__":
 	roadmap = nx.MultiDiGraph()
 	roadmap.add_edge(0, 1, 'road1')
 
-	scale = np.array([800,600])
+	width, height = 300, 300
+	scale = np.array([width, height])
 	interchanges = [ scale * np.random.rand(2) for i in xrange(15) ]
 
 	layout = { k: pos for k, pos in enumerate(interchanges) }
@@ -38,7 +39,7 @@ if __name__ == "__main__":
 
 	print json.dumps(inst_json, indent=2)
 
-	request_json = dict(query=json.dumps(inst_json))
+	request_json = dict(query=json.dumps(inst_json), width=width, height=height)
 
 	# call the app!
 	url = 'http://localhost:5000/igraph'

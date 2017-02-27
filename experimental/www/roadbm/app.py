@@ -62,6 +62,9 @@ def euclidean_roads_bipartite_match_svg():
 	query_json = data['query']
 	query = json.loads(query_json)
 
+	width = int(data.get('width'))
+	height = int(data.get('height'))
+
 	inst = roadbm_json.RoadMatchInstanceEuclidean.from_json(query)
 
 	S = inst.source_points()
@@ -86,16 +89,14 @@ def euclidean_roads_bipartite_match_svg():
 		return jsonify((graph_repr, other_pos_repr))
 
 	else :
-		return draw_interval_graph(interval_graph, layout_, roadmap, layout)
+		return draw_interval_graph(interval_graph, layout_, roadmap, layout, width, height)
 
 
-def draw_interval_graph(interval_graph, layout, roadmap, road_layout):
+def draw_interval_graph(interval_graph, layout, roadmap, road_layout, width, height):
 	# we can figure out scaling, etc., later
 	# create XML 
 
 	# this needs to be passed in
-	width = 800
-	height = 600
 	root = etree.Element('svg', attrib=dict(width=repr(width), height=repr(height)))
 
 	def make_road(x0,xf):

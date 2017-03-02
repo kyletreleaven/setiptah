@@ -18,6 +18,11 @@ import euclidean_roadmap
 
 app = Flask(__name__)
 
+@app.route('/static/<path:path>')
+def send_static(path):
+	return send_from_directory('static', path)
+
+
 @app.route('/', methods=['GET'])
 def roads_bipartite_match():
 	data = { key: value for key, value in request.args.iteritems() }
@@ -34,6 +39,7 @@ def roads_bipartite_match():
 	match = bm.ROADSBIPARTITEMATCH(S, T, roadmap)
 
 	return jsonify(match)
+
 
 @app.route('/picture', methods=['GET'])
 def my_pretty_picture():

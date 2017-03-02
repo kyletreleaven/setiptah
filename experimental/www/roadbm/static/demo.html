@@ -1,0 +1,51 @@
+<html>
+
+
+<script>
+
+function saySomething(message) {
+	alert(message);
+}
+
+function sayWhatIsInTheBox() {
+	var text = document.getElementById('textarea').value;
+	alert(text);
+}
+
+//<button type="button" onclick="saySomething('stuff')">Do Something</button>
+
+function getMatchingSvg(request) {
+	var url = 'http://localhost:5000/picture';
+
+	var xhttp = new XMLHttpRequest();
+  	xhttp.onreadystatechange = function() {
+    	if (this.readyState == 4 && this.status == 200) {
+    		document.getElementById('imagespace').innerHTML = this.responseText;
+			//document.getElementById('A1').innerHTML = this.status;
+			//document.getElementById('A2').innerHTML = this.statusText;
+		}
+	}
+
+	xhttp.open("GET", url, true);
+	xhttp.send();
+}
+
+</script>
+
+
+<body>
+
+
+
+<h1>Try it yo!</h1>
+
+<textarea id="textarea" rows="10" cols="40"></textarea>
+
+<button type="button" onclick="getMatchingSvg()">Do Something</button>
+
+<div id="imagespace"></div>
+
+
+</body>
+
+</html>

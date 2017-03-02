@@ -16,7 +16,7 @@ function sayWhatIsInTheBox() {
 
 function getMatchingSvg(request) {
 	var url = 'http://localhost:5000/picture';
-
+	
 	var xhttp = new XMLHttpRequest();
   	xhttp.onreadystatechange = function() {
     	if (this.readyState == 4 && this.status == 200) {
@@ -30,18 +30,99 @@ function getMatchingSvg(request) {
 	xhttp.send();
 }
 
+function getRequest() {
+
+	var request = {};
+	
+	request.roads = [];
+
+	var roadArea = document.getElementById("roadarea");
+	var roadLines = roadArea.value.split("\n");
+
+	for (var k=0; k < roadLines.length; k++) {
+		var roadData = roadLines[k].split(',');
+
+		request.roads.push({
+			'name': roadData[0],
+			'source': parseInt(roadData[1]),
+			'target': parseInt(roadData[2])
+		});
+	}
+
+	request.layout = [];
+
+	var layoutArea = document.getElementById("pointarea");
+	var layoutLines = layoutArea.value.split("\n");
+
+	for (var k=0; k < layoutLines.length; k++) {
+		var layoutData = layoutLines[k].split(',');
+
+		request.layout.push({
+			'vertex': parseInt(layoutData[0]),
+			'point': [parseFloat(layoutData[1]), parseFloat(layoutData[2])]
+		});
+	}
+
+	var pointLines;
+	var point;
+
+	request.source_points = [];
+	pointLines = document.getElementById("sourcepoints").value.split("\n");
+	for (var k=0; k < pointLines.length; k++) {
+		point = pointLines[k].split(',');
+
+		request.source_points.push({
+			'road': point[0],
+			'coordinate': parseFloat(point[1])
+		});
+	}
+
+	request.target_points = [];
+	pointLines = document.getElementById("targetpoints").value.split("\n");
+	for (var k=0; k < pointLines.length; k++) {
+		point = pointLines[k].split(',');
+
+		request.target_points.push({
+			'road': point[0],
+			'coordinate': parseFloat(point[1])
+		});
+	}
+
+	alert(JSON.stringify(request));
+	//return request;
+}
+
 </script>
 
 
 <body>
 
+<h1>Make a [road] match!</h1>
+
+<table>
+<tr>
+<td>Roads<br/>
+<textarea id="roadarea" rows="10" cols="40"></textarea>
+</td>
+<td>
+Layout<br/>
+<textarea id="pointarea" rows="10" cols="40"></textarea>	
+</td>
+</tr>
+<tr>
+<td>
+Source Points<br/>
+<textarea id="sourcepoints" rows="10" cols="40"></textarea>
+</td>
+<td>
+Target Points<br/>
+<textarea id="targetpoints" rows="10" cols="40"></textarea>	
+</td>
+</tr>
 
 
-<h1>Try it yo!</h1>
 
-<textarea id="textarea" rows="10" cols="40"></textarea>
-
-<button type="button" onclick="getMatchingSvg()">Do Something</button>
+<button type="button" onclick="getRequest()">Do Something</button>
 
 <div id="imagespace"></div>
 

@@ -14,9 +14,28 @@ function sayWhatIsInTheBox() {
 
 //<button type="button" onclick="saySomething('stuff')">Do Something</button>
 
-function getMatchingSvg(request) {
-	var url = 'http://localhost:5000/picture';
-	
+function formatParams(params) {
+	return "?" + Object
+		.keys(params)
+		.map(function(key) {
+			return key + "=" + params[key]
+		})
+		.join("&");
+}
+
+function getMatchingSvg(url) {
+	//var url = 'http://localhost:5000/picture';
+
+	var params = {
+		width: 400,
+		height: 300,
+		query: encodeURIComponent(JSON.stringify(getQuery()))
+		//query: encodeURIComponent(getQuery())
+	};
+
+	var fullUrl = url + formatParams(params);
+	//alert(fullUrl);
+
 	var xhttp = new XMLHttpRequest();
   	xhttp.onreadystatechange = function() {
     	if (this.readyState == 4 && this.status == 200) {
@@ -26,11 +45,11 @@ function getMatchingSvg(request) {
 		}
 	}
 
-	xhttp.open("GET", url, true);
+	xhttp.open("GET", fullUrl, true);
 	xhttp.send();
 }
 
-function getRequest() {
+function getQuery() {
 
 	var request = {};
 	
@@ -88,8 +107,8 @@ function getRequest() {
 		});
 	}
 
-	alert(JSON.stringify(request));
-	//return request;
+	//alert(JSON.stringify(request));
+	return request;
 }
 
 </script>
@@ -122,9 +141,9 @@ Target Points<br/>
 
 
 
-<button type="button" onclick="getRequest()">Do Something</button>
+<button type="button" onclick="getMatchingSvg('http://localhost:5000/igraph')">Do Something</button>
 
-<div id="imagespace"></div>
+<span id="imagespace"></span>
 
 
 </body>

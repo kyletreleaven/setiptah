@@ -1,0 +1,5 @@
+package setiptah;
+
+message StringMessage {
+	optional string the_message = 10;
+}

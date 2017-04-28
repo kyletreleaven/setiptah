@@ -7,17 +7,12 @@ def f(x):
 	return np.sin(x)
 
 
-def get_feature_columns():
-	patch = tf.something.real_valued_column("patch", dimension=9)
-	return [patch]
-
-
 def input_fn():
 	xs = tf.random_uniform([100,1], -np.pi, np.pi)
 	
 	ys = tf.py_func(f, [xs], tf.float32)
 
-	# need to shape the output of py_func
+	# Gotcha: need to shape the output of py_func explicitly
 	rows = tf.shape(ys)[0]
 	ys = tf.reshape(ys, [rows,1])
 	
@@ -25,13 +20,6 @@ def input_fn():
 
 
 if __name__ == '__main__':
-
-	"""
-		estimator = tf.learn.contrib.DNNClassifier(
-    feature_columns=[sparse_feature_a_emb, sparse_feature_b_emb],
-    hidden_units=[1024, 512, 256])
-	"""
-	#optimizer = tf.train.ProximalAdagradOptimizer(learning_rate=0.1,l1_regularization_strength=0.001)
 
 	if True:
 		feature_column = tf.contrib.layers.real_valued_column("xs")

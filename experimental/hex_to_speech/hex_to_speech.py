@@ -1,4 +1,4 @@
-"""Encrypted speech.
+"""Convert between hex encoding and Encrypted speech.
 
 Encryption keys and ciphertexts are usually provided in formats that are slow, awkward, and error prone for transmission by spoken word.
 Instead, can we code against a dictionary of English words for a more natural medium?
@@ -16,36 +16,94 @@ https://xkcd.com/936/
 
 # Essentially, a problem of radix conversion.
 # from string -> hex, i.e., # in base 2^4 -> # in base |english|
-def convert(number, base1, base2):
-	pass
 
-def char_to_hex():
-	return hex(ord(c))	# perhaps slice [-2:]
+import math
 
 
-# Another kind of interesting alternative approach:
-# https://www.checkmyworking.com/2012/06/converting-a-stream-of-binary-digits-to-a-stream-of-base-n-digits/
+def char_to_hex(c):
+	return hex(ord(c))[-2:]
 
-class BaseStream:
-	def __init__(self, source_base, target_base):
-		self._source_base = source_base
-		self._target_base = target_base
+def string_to_hex(string):
+	return ''.join(char_to_hex(c) for c in string)
 
-	def push(self, n):
-		pass
+def split_every(a_list, k):
+	return [ a_list[i:i+k] for i in xrange(0,len(a_list), k) ]
 
-	def ready(self):
-		pass
+def hex_to_char(char_hex):
+	return chr(int(char_hex,16))
 
-	def next(self):
-		pass
+def hex_to_string(hex_string):
+	hexes = split_every(hex_string,2)
+	return ''.join(hex_to_char(h) for h in hexes)
 
-def residuals_base(curr_base, target_base):
-	# k = smallest k' s.t. curr_base^{k'} >= target_base
-	# next_base = 2^k - target_base
-	pass
+
+def sublang(lang):
+	n = len(lang)
+	k = int(math.floor(math.log(n,2)))
+	return lang[:2**k], k
+
+def hexchar_to_bin(hex_char):
+	n = int(hex_char,16)
+	return bin(n)[2:].zfill(4)
+
+
+def hex_to_bin(hex_string):
+	return ''.join(hexchar_to_bin(h) for h in hex_string)
+
+
+def hex_to_language(hex_string, language):
+	bits = hex_to_bin(hex_string)
+
+	lang = sorted(language)
+	lang, p = sublang(lang)
+
+	word_keys = [int(bs,2) for bs in split_every(bits,p)]
+	return ' '.join(lang[wk] for wk in word_keys)
+
+
+def language_to_hex(sentence, language):
+	words = sentence.split()
+
+	lang = sorted(language)
+	lang, p = sublang(lang)
+
+	indices = [ lang.index(w) for w in words ]
+
+	# each index contributes p bits
+	bits = ''.join(bin(i)[2:].zfill(p) for i in indices)
+	bgroups = split_every(bits,4)
+
+	return ''.join(hex(int(bs,2))[2:] for bs in bgroups)
 
 
 if __name__ == '__main__':
-  pass
-  
+
+	LANGUAGE = [ c for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
+	
+	# "testing"
+	alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+
+	import random
+
+	num_test = 10
+	test_len = 20
+	tests = [ ''.join(random.choice(alphabet) for _ in xrange(test_len)) for _ in xrange(num_test)]
+
+	hexes = [ string_to_hex(t) for t in tests ]
+	encs = [ hex_to_language(h, LANGUAGE) for h in hexes ]
+
+	dechexes = [ language_to_hex(e, LANGUAGE) for e in encs ] 
+	decs = [ hex_to_string(h) for h in dechexes ]
+
+	print [ a == b for a, b in zip(tests, decs)]
+
+	
+
+
+
+
+
+
+
+
+

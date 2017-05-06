@@ -10,6 +10,8 @@ In other words, can we re-purpose an interesting idea to encourage device-assist
 
 Use a power-of-two part of the English dictionary
 
+[list of english words](http://www-01.sil.org/linguistics/wordlists/english/#EnglishWordlist)
+
 # TODO
 
 Apply arithmetic coding for streaming radix conversion?  Solve precision issues in "range coding".

@@ -37,11 +37,6 @@ def hex_to_string(hex_string):
 	return ''.join(hex_to_char(h) for h in hexes)
 
 
-def sublang(lang):
-	n = len(lang)
-	k = int(math.floor(math.log(n,2)))
-	return lang[:2**k], k
-
 def hexchar_to_bin(hex_char):
 	n = int(hex_char,16)
 	return bin(n)[2:].zfill(4)
@@ -50,6 +45,13 @@ def hexchar_to_bin(hex_char):
 def hex_to_bin(hex_string):
 	return ''.join(hexchar_to_bin(h) for h in hex_string)
 
+
+# TODO(ktreleav): First efficiency improvement would be have a pre-processed structure for language.
+
+def sublang(lang):
+	n = len(lang)
+	k = int(math.floor(math.log(n,2)))
+	return lang[:2**k], k
 
 def hex_to_language(hex_string, language):
 	bits = hex_to_bin(hex_string)
@@ -76,34 +78,50 @@ def language_to_hex(sentence, language):
 	return ''.join(hex(int(bs,2))[2:] for bs in bgroups)
 
 
+def encrypt(plaintext, enc_key, language):
+
+	# TODO(ktreleav): Substitute an *actual* encryption scheme
+	def _base_encrypt(plaintext, enc_key):
+		return string_to_hex(plaintext)
+
+	hex_ciphertext = _base_encrypt(plaintext, enc_key)
+
+	return hex_to_language(hex_ciphertext, language)
+
+
+def decrypt(cipherspeech, dec_key, language):
+
+	hex_ciphertext = language_to_hex(cipherspeech, language)
+
+	# TODO(ktreleav): Substitute an *actual* decryption scheme
+	def _base_decrypt(ciphertext, dec_key):
+		return hex_to_string(ciphertext)
+
+	return _base_decrypt(hex_ciphertext, dec_key)	
+
+
 if __name__ == '__main__':
-
-	LANGUAGE = [ c for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
-	
-	# "testing"
-	alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-
 	import random
 
-	num_test = 10
-	test_len = 20
-	tests = [ ''.join(random.choice(alphabet) for _ in xrange(test_len)) for _ in xrange(num_test)]
-
-	hexes = [ string_to_hex(t) for t in tests ]
-	encs = [ hex_to_language(h, LANGUAGE) for h in hexes ]
-
-	dechexes = [ language_to_hex(e, LANGUAGE) for e in encs ] 
-	decs = [ hex_to_string(h) for h in dechexes ]
-
-	print [ a == b for a, b in zip(tests, decs)]
-
-	
+	if True:
+		with open('wordsEn.txt','r') as f:
+			LANGUAGE = list(line.strip() for line in f.readlines())
+	else:
+		LANGUAGE = [ c for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
 
 
+	if False:
+		# "testing"
+		alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 
+		num_test = 10
+		test_len = 20
+		tests = [ ''.join(random.choice(alphabet) for _ in xrange(test_len)) for _ in xrange(num_test)]
 
+		hexes = [ string_to_hex(t) for t in tests ]
+		encs = [ hex_to_language(h, LANGUAGE) for h in hexes ]
 
+		dechexes = [ language_to_hex(e, LANGUAGE) for e in encs ] 
+		decs = [ hex_to_string(h) for h in dechexes ]
 
-
-
-
+		print [ a == b for a, b in zip(tests, decs)]

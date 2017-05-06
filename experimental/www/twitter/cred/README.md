@@ -1,0 +1,1 @@
+Place credentials in this folder in file `client.yaml`. 

@@ -102,6 +102,7 @@ def decrypt(cipherspeech, dec_key, language):
 
 if __name__ == '__main__':
 	import random
+	import argparse
 
 	if True:
 		with open('wordsEn.txt','r') as f:
@@ -109,8 +110,25 @@ if __name__ == '__main__':
 	else:
 		LANGUAGE = [ c for c in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' ]
 
+	if True:
+		parser = argparse.ArgumentParser()
+		parser.add_argument('message', type=str)
+		parser.add_argument('--decode', action='store_true')
 
-	if False:
+		args = parser.parse_args()
+
+		if args.decode:
+			dec_hex = language_to_hex(args.message, LANGUAGE)
+			dec_msg = hex_to_string(dec_hex)
+			print dec_msg
+
+		else:
+			hex_msg = string_to_hex(args.message)
+			enc_msg = hex_to_language(hex_msg, LANGUAGE)
+			print enc_msg
+
+
+	else:
 		# "testing"
 		alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
 

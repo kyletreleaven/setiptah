@@ -1,99 +1,26 @@
-import scala.collection.mutable.{HashMap}
-
 /**
-  * Created by horus on 1/10/2017.
+  * Created by ktreleav on 7/4/2017.
   */
+package setiptah.suffixtree.algorithms
+
+import setiptah.suffixtree.SuffixTrees._
+import setiptah.suffixtree.Util.Range
 
 // Ukkonen's algorithm in scala, from http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english
 
-/*
- Reference (naive) algorithm:
- insert all suffixes at root; then, recursively: group (x :: xs) by x, i.e., by starting character;
- then; collapse nodes with degree 2
+object Ukkonen extends SuffixTreeAlgorithm {
 
- comparing outputs is simple.
-  */
-
-object Util {
-  implicit class StringHelper(string: String) {
-    def lastIndex: Int = string.length() - 1
+  def suffixTree(string: String): Node = {
+    val root = new Node
+    makeSuffixTree(string, AlgorithmProgress.start, root, NodeCursor(root), None)
   }
-
-  case class Range(start: Int, end: Int) {
-    def length = end - start + 1
-  }
-}
-
-object SuffixTrees {
-  import Util._
-
-  // stateful stuff
-  class Node {
-    val outEdges = HashMap.empty[Char, Edge]
-    var suffixEdge: Option[SuffixEdge] = None
-
-    def nextNode(default: Node) = suffixEdge.map(_.targetNode).getOrElse(default)
-
-    def readable(string: String)
-    : String = graphmap(string).toString()
-
-    def graphmap(string: String): Node2 = {
-      val node = new Node2
-
-      node.edges = outEdges map {
-        case (c: Char, edge: Edge) => {
-          val prefixStart = edge.startIndex
-
-          edge.extent match {
-
-            case Leaf => {
-              val prefixEnd = string.length
-              (string.substring(prefixStart, prefixEnd), new Node2)
-            }
-
-            case Internal(length, target) => {
-              val prefixEnd = prefixStart + length
-              (string.substring(prefixStart, prefixEnd),
-                target.graphmap(string))
-            }
-          }
-        }
-      }
-
-      node
-    }
-  }
-
-  class Node2 {
-    var edges = HashMap.empty[String, Node2]
-
-    override def toString: String = {
-      if (edges.size == 0) {
-        "nil"
-      }
-      else {
-        edges   .mapValues( _.toString )   .toString
-      }
-    }
-  }
-
-  class SuffixEdge(val targetNode: Node)
-
-  class Edge(var startIndex: Int) {
-    var extent: EdgeExtent = Leaf
-  }
-
-  sealed trait EdgeExtent
-  case object Leaf extends EdgeExtent
-  case class Internal(length: Int, targetNode: Node) extends EdgeExtent {
-  }
-
-  // immutables
 
   // algorithm types
-  case class AlgorithmProgress(index: Int, currentSuffix: Int) {
+  case class AlgorithmProgress(
+                                index: Int, // The last index of the prefix for which the tree being built is a suffix tree.
+                                currentSuffix: Int  // The length of the last bit of the prefix that still needs some processing.
+                              ) {
     def suffixRange = Range(index - currentSuffix + 1, index)
-    // def view(string: String): StringView
   }
 
   object AlgorithmProgress {
@@ -103,12 +30,7 @@ object SuffixTrees {
   sealed trait Cursor
   case class NodeCursor(baseNode: Node) extends Cursor
   case class EdgeCursor(baseNode: Node, edgePos: EdgePosition) extends Cursor
-  case class EdgePosition(activeEdge: Char, activeLength: Int)
-
-  def suffixTree(string: String): Node = {
-    val root = new Node
-    makeSuffixTree(string, AlgorithmProgress.start, root, NodeCursor(root), None)
-  }
+  case class EdgePosition(activeChar: Char, activeLength: Int)
 
   def splitEdge(edge: Edge, activeLength: Int,
                 newIndex: Int, string: String): Node = {
@@ -266,5 +188,4 @@ object SuffixTrees {
       }
     }
   }
-
 }

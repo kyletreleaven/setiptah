@@ -1,8 +1,14 @@
+import setiptah.suffixtree.DisplayNode
+import setiptah.suffixtree.SuffixTrees._
+import setiptah.suffixtree.algorithms.Ukkonen
+import setiptah.suffixtree.algorithms.NaiveReference
+
 /**
   * Created by horus on 1/14/2017.
   */
+
 class SuffixTreesTest extends org.scalatest.FunSuite {
-  import SuffixTrees._
+  def suffixTree(string: String) = NaiveReference.suffixTree(string)
 
   test("Suffix tree on empty string is simple node") {
     val tree = suffixTree("")
@@ -59,33 +65,35 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
 
     val tree = suffixTree(string)
 
-    println(tree.readable(string))
+    val display = new NodeDisplayExtension(tree)
 
-    val tree_graph = tree.graphmap(string)
+    println(display.readable(string))
+
+    val tree_graph = display.graphmap(string)
     println( flatten(tree_graph) )
 
     writeDotGraph(tree_graph)
   }
 
-  def flatten(node: Node2): List[Node2] = {
+  def flatten(node: DisplayNode): List[DisplayNode] = {
     List(node) ++ node.edges.values   .flatMap( flatten )
   }
 
-  def listEdges(node: Node2): Unit = {
+  def listEdges(node: DisplayNode): Unit = {
     val nodes = flatten(node)
     val nodeMap = nodes.zipWithIndex   .toMap
 
-    for ( i: Node2 <- nodes; (e: String,j: Node2) <- i.edges ) {
+    for (i: DisplayNode <- nodes; (e: String,j: DisplayNode) <- i.edges ) {
       println("%d -(%s)->%d".format(nodeMap(i), e, nodeMap(j)))
     }
   }
 
-  def writeDotGraph(node: Node2): Unit = {
+  def writeDotGraph(node: DisplayNode): Unit = {
     val nodes = flatten(node)
     val nodeMap = nodes.zipWithIndex   .toMap
 
     println("digraph MYGRAPH{")
-    for ( i: Node2 <- nodes; (e: String,j: Node2) <- i.edges ) {
+    for (i: DisplayNode <- nodes; (e: String,j: DisplayNode) <- i.edges ) {
       //println("%d -(%s)->%d".format(nodeMap(i), e, nodeMap(j)))
       println("\t%d -> %d [label=\"%s\"]".format(nodeMap(i), nodeMap(j), e))
     }
@@ -102,6 +110,40 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
     val distinct = Set[Char]() ++ string
     assert(tree.outEdges.size == distinct.size)
 
-    println( tree.readable(string) )
+    println( new NodeDisplayExtension(tree).readable(string) )
   }
 }
+
+
+class NodeDisplayExtension(node: Node) {
+  def readable(string: String)
+  : String = graphmap(string).toString()
+
+  def graphmap(string: String): DisplayNode = {
+    val displayNode = new DisplayNode
+
+    displayNode.edges = node.outEdges map {
+      case (c: Char, edge: Edge) => {
+        val prefixStart = edge.startIndex
+
+        edge.extent match {
+
+          case Leaf => {
+            val prefixEnd = string.length
+            (string.substring(prefixStart, prefixEnd), new DisplayNode)
+          }
+
+          case Internal(length, target) => {
+            val prefixEnd = prefixStart + length
+            (string.substring(prefixStart, prefixEnd),
+              new NodeDisplayExtension(target).graphmap(string))
+          }
+        }
+      }
+    }
+
+    displayNode
+  }
+}
+
+

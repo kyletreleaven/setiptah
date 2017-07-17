@@ -15,7 +15,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
 
   def suffixTree(string: String): Node = {
     val root = new Node
-    makeSuffixTree(string, AlgorithmProgress.start, root, NodeCursor(root), None)
+    makeSuffixTree(string, AlgorithmProgress.start, NodeCursor(root))(root, None)
   }
 
   // algorithm types
@@ -35,6 +35,10 @@ object Ukkonen extends SuffixTreeAlgorithm {
   case class EdgeCursor(baseNode: Node, edgePos: EdgePosition) extends Cursor
   case class EdgePosition(activeChar: Char, activeLength: Int)
 
+  /** Splits an edge after activeLength characters to create a "tee".
+    * One branch maintains the subtree of the original edge.
+    * The other branch starts a subtree from position newIndex in string.
+    */
   def splitEdge(edge: Edge, activeLength: Int,
                 newIndex: Int, string: String): Node = {
 
@@ -47,7 +51,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
     val lowerStartIndex = edge.startIndex + activeLength
 
     // edge gets shortened
-    var upperEdge = edge // just an alias
+    var upperEdge = edge // just an alias; edge is modified in place
     val lowerEdge = new Edge(lowerStartIndex)
 
     lowerEdge.extent = edge.extent match {
@@ -65,7 +69,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
     newNode
   }
 
-  def makeSuffixTree(string: String, progress: AlgorithmProgress, root: Node, cursor: Cursor, prefixNode: Option[Node])
+  def makeSuffixTree(string: String, progress: AlgorithmProgress, cursor: Cursor)(root: Node, prefixNode: Option[Node])
   : Node = {
     // are these lazy?
 
@@ -74,7 +78,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
       // chamber another character?
       case AlgorithmProgress(index, 0) => {
         if (index + 1 >= string.length) root
-        else makeSuffixTree(string, AlgorithmProgress(index + 1, 1), root, NodeCursor(root), None)
+        else makeSuffixTree(string, AlgorithmProgress(index + 1, 1), NodeCursor(root))(root, None)
       }
 
       // do an operation on the graph?
@@ -94,14 +98,14 @@ object Ukkonen extends SuffixTreeAlgorithm {
 
                 val nextProgress = AlgorithmProgress(index, currentSuffix - 1)
                 val nextNode = node.suffixEdge.map(_.targetNode).getOrElse(root)
-                makeSuffixTree(string, nextProgress, root, NodeCursor(nextNode), None)
+                makeSuffixTree(string, nextProgress, NodeCursor(nextNode))(root, None)
               }
 
               // queue the suffix and move on
               case Some(edge) => {
                 val nextCursor = EdgeCursor(node, EdgePosition(insertChar, 1))
                 val nextProgress = AlgorithmProgress(index + 1, currentSuffix + 1)
-                makeSuffixTree(string, nextProgress, root, nextCursor, None)
+                makeSuffixTree(string, nextProgress, nextCursor)(root, None)
               }
             }
           }
@@ -138,7 +142,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
               }
 
               // Ukkonen says tail of suffix edge is the inserted node
-              makeSuffixTree(string, nextProgress, root, nextCursor, Some(newNode))
+              makeSuffixTree(string, nextProgress, nextCursor)(root, Some(newNode))
             }
 
             def properEdgeAction(): Node = {
@@ -150,7 +154,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
                 val nextProgress = AlgorithmProgress(index + 1, currentSuffix + 1)
                 val nextCursor = EdgeCursor(node, EdgePosition(rootChar, activeLength + 1))
                 // TODO(ktreleav): optimize since I know it's a leaf from here on!
-                makeSuffixTree(string, nextProgress, root, nextCursor, None)
+                makeSuffixTree(string, nextProgress, nextCursor)(root, None)
               }
 
               else {
@@ -173,7 +177,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
 
                 else if (activeLength == edgeLength) {
                   // such cursor is actually pointing at the next node, isn't it...
-                  makeSuffixTree(string, progress, root, NodeCursor(targetNode), prefixNode)
+                  makeSuffixTree(string, progress, NodeCursor(targetNode))(root, prefixNode)
                 }
 
                 else {
@@ -182,7 +186,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
                   val branchChar: Char = string(firstIndexAfterEdge)
 
                   val nextCursor = EdgeCursor(targetNode, EdgePosition(branchChar, activeLength - edgeLength))
-                  makeSuffixTree(string, progress, root, nextCursor, prefixNode)
+                  makeSuffixTree(string, progress, nextCursor)(root, prefixNode)
                 }
               }
             }

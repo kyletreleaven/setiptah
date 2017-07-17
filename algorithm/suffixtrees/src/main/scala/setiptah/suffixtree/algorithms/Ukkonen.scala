@@ -37,6 +37,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
   /** Splits an edge after activeLength characters to create a "tee".
     * One branch maintains the subtree of the original edge.
     * The other branch starts a subtree from position newIndex in string.
+    * Returns the new terminal node of the new edge.
     */
   def splitEdge(activeLength: Int,
                 newIndex: Int, string: String)(edge: Edge): Node = {
@@ -116,7 +117,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
               // do a split! does the newNode get used?
               val newNode = splitEdge(activeLength, index, string)(edge)
               // connect from any previously inserted node
-              prefixNode   .map( _.suffixEdge = Some(new SuffixEdge(newNode)) )
+              prefixNode.foreach( _.suffixEdge = Some(new SuffixEdge(newNode)) )  // map -> forEach
 
               // setup the next iteration
               val nextNode = cursorNode.nextNode(root) // is this always root?
@@ -136,7 +137,6 @@ object Ukkonen extends SuffixTreeAlgorithm {
                 }
               }
               else {
-                // This bit seems risky...? comeback
                 cursor
               }
 

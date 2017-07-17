@@ -38,8 +38,8 @@ object Ukkonen extends SuffixTreeAlgorithm {
     * One branch maintains the subtree of the original edge.
     * The other branch starts a subtree from position newIndex in string.
     */
-  def splitEdge(edge: Edge, activeLength: Int,
-                newIndex: Int, string: String): Node = {
+  def splitEdge(activeLength: Int,
+                newIndex: Int, string: String)(edge: Edge): Node = {
 
     val newNode = new Node
     val newEdge = new Edge(newIndex)
@@ -114,7 +114,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
 
             def splitAction(): Node = {
               // do a split! does the newNode get used?
-              val newNode = splitEdge(edge, activeLength, index, string)
+              val newNode = splitEdge(activeLength, index, string)(edge)
               // connect from any previously inserted node
               prefixNode   .map( _.suffixEdge = Some(new SuffixEdge(newNode)) )
 

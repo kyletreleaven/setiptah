@@ -1,14 +1,15 @@
-import setiptah.suffixtree.DisplayNode
+import setiptah.suffixtree.{DisplayNode, algorithms}
 import setiptah.suffixtree.SuffixTrees._
-import setiptah.suffixtree.algorithms.Ukkonen
-import setiptah.suffixtree.algorithms.NaiveReference
+import setiptah.suffixtree.algorithms.{NaiveReference, NodeDisplayExtension, Ukkonen}
 
 /**
   * Created by horus on 1/14/2017.
   */
 
 class SuffixTreesTest extends org.scalatest.FunSuite {
-  def suffixTree(string: String) = NaiveReference.suffixTree(string)
+  // def suffixTree(string: String) = NaiveReference.suffixTree(string)
+  def suffixTree(string: String) = Ukkonen.suffixTree(string)
+
 
   test("Suffix tree on empty string is simple node") {
     val tree = suffixTree("")
@@ -75,6 +76,11 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
     writeDotGraph(tree_graph)
   }
 
+  test("Particular string of a's and b's does not crash.") {
+    suffixTree("aaabaaaaba$")
+    // TODO(ktreleav): Show the graph.
+  }
+
   def flatten(node: DisplayNode): List[DisplayNode] = {
     List(node) ++ node.edges.values   .flatMap( flatten )
   }
@@ -115,35 +121,6 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
 }
 
 
-class NodeDisplayExtension(node: Node) {
-  def readable(string: String)
-  : String = graphmap(string).toString()
 
-  def graphmap(string: String): DisplayNode = {
-    val displayNode = new DisplayNode
-
-    displayNode.edges = node.outEdges map {
-      case (c: Char, edge: Edge) => {
-        val prefixStart = edge.startIndex
-
-        edge.extent match {
-
-          case Leaf => {
-            val prefixEnd = string.length
-            (string.substring(prefixStart, prefixEnd), new DisplayNode)
-          }
-
-          case Internal(length, target) => {
-            val prefixEnd = prefixStart + length
-            (string.substring(prefixStart, prefixEnd),
-              new NodeDisplayExtension(target).graphmap(string))
-          }
-        }
-      }
-    }
-
-    displayNode
-  }
-}
 
 

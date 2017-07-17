@@ -5,6 +5,9 @@ import setiptah.suffixtree.Util
   * Created by ktreleav on 7/4/2017.
   */
 
+class NaiveSuffixTreeDriver[TNode] extends SuffixTreeAlgorithmDriverAdapter[TNode](NaiveReference)
+
+
 object NaiveReference extends App
   with SuffixTreeAlgorithm {
   /** Reference (naive algorithm).

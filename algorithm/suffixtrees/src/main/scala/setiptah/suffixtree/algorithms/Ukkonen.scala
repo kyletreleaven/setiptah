@@ -8,6 +8,9 @@ import setiptah.suffixtree.Util.Range
 
 // Ukkonen's algorithm in scala, from http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english
 
+class UkkonenDriver[TNode] extends SuffixTreeAlgorithmDriverAdapter[TNode](Ukkonen)
+
+
 object Ukkonen extends SuffixTreeAlgorithm {
 
   def suffixTree(string: String): Node = {

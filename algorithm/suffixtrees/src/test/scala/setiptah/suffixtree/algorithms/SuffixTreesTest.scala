@@ -76,7 +76,7 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
     writeDotGraph(tree_graph)
   }
 
-  /*
+  ///*
   test("Particular string of a's and b's does not crash.") {
     suffixTree("aaabaaaaba$")
     // TODO(ktreleav): Show the graph.
@@ -120,9 +120,31 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
 
     println( new NodeDisplayExtension(tree).readable(string) )
   }
+
+  def randomChoice[T](array: Array[T]): T = {
+    array((array.size * scala.math.random()).toInt)
+  }
+
+  val alphabet = "ABCDEFG".toCharArray
+
+  def randomString(n: Int): String = {
+    (0 until n).map( _ => randomChoice(alphabet) ).mkString("")
+  }
+
+  test("Fuzz test against reference implementation.") {
+
+    def seq = (0 until 100).map( _ => randomString(10) )
+
+    for ( str_ <- seq ) {
+      val str = str_ + '$'
+      println(str)
+
+      val compareBuilder = new SuffixTreeComparison.Builder(str)
+
+      val treeRef = NaiveSuffixTreeDriver.suffixTree(str,compareBuilder)
+      val treeUkkonen = UkkonenDriver.suffixTree(str, compareBuilder)
+
+      assert(SuffixTreeComparison.equals(treeRef, treeUkkonen))
+    }
+  }
 }
-
-
-
-
-

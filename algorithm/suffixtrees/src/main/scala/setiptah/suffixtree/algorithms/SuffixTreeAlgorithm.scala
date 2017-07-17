@@ -18,15 +18,15 @@ trait SuffixTreeBuilder[TNode] {
 }
 
 
-trait SuffixTreeDriver[TNode] {
-  def suffixTree(string: String, builder: SuffixTreeBuilder[TNode]): TNode
+trait SuffixTreeDriver {
+  def suffixTree[TNode](string: String, builder: SuffixTreeBuilder[TNode]): TNode
 }
 
 
-class SuffixTreeAlgorithmDriverAdapter[TNode](algorithm: SuffixTreeAlgorithm)
-  extends SuffixTreeDriver[TNode] {
+class SuffixTreeAlgorithmDriverAdapter(algorithm: SuffixTreeAlgorithm)
+  extends SuffixTreeDriver {
 
-  def suffixTree(string: String, builder: SuffixTreeBuilder[TNode]): TNode = {
+  def suffixTree[TNode](string: String, builder: SuffixTreeBuilder[TNode]): TNode = {
     val implRoot = algorithm.suffixTree(string)
 
     def process(implNode: Node, targetNode: TNode): Unit = {

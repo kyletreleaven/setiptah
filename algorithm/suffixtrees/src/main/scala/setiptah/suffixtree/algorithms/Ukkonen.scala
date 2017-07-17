@@ -8,7 +8,7 @@ import setiptah.suffixtree.Util.Range
 
 // Ukkonen's algorithm in scala, from http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english
 
-class UkkonenDriver[TNode] extends SuffixTreeAlgorithmDriverAdapter[TNode](Ukkonen)
+object UkkonenDriver extends SuffixTreeAlgorithmDriverAdapter(Ukkonen)
 
 
 object Ukkonen extends SuffixTreeAlgorithm {
@@ -117,7 +117,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
               // do a split! does the newNode get used?
               val newNode = splitEdge(activeLength, index, string)(edge)
               // connect from any previously inserted node
-              prefixNode.foreach( _.suffixEdge = Some(new SuffixEdge(newNode)) )  // map -> forEach
+              prefixNode.foreach( _.suffixEdge = Some(new SuffixEdge(newNode)) )
 
               // setup the next iteration
               val nextNode = cursorNode.nextNode(root) // is this always root?

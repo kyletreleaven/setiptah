@@ -1,11 +1,65 @@
 package setiptah.suffixtree.algorithms
 import setiptah.suffixtree.SuffixTrees._
 import setiptah.suffixtree.Util
+
+import scala.collection.mutable
 /**
   * Created by ktreleav on 7/4/2017.
   */
 
-class NaiveSuffixTreeDriver[TNode] extends SuffixTreeAlgorithmDriverAdapter[TNode](NaiveReference)
+object NaiveSuffixTreeDriver extends SuffixTreeAlgorithmDriverAdapter(NaiveReference)
+
+
+object OptionUtil {
+  def optionEqualsMax[T](equals: (T,T) => Boolean)(i: Option[T], j: Option[T]): Boolean = {
+    (i, j) match {
+      case (None, None) => true
+      case (Some(i_), Some(j_)) => equals(i_, j_)
+      case _ => false
+    }
+  }
+}
+
+object SuffixTreeComparison {
+  class Node {
+    val outEdges = new mutable.HashMap[Char,Edge]
+  }
+
+  case class Edge(string: String, target: Option[Node])
+
+  class Builder(string: String) extends SuffixTreeBuilder[Node] {
+    def newRoot: Node = new Node
+
+    def addTerminalEdge(node: Node, startIndex: Int): Unit = {
+      node.outEdges.update(string(startIndex), Edge(string.substring(startIndex), None))
+    }
+
+    def addInternalEdge(node: Node, startIndex: Int, length: Int): Node = {
+      val target = new Node
+      node.outEdges.update(string(startIndex), Edge(string.substring(startIndex, startIndex + length), Some(target)))
+      target
+    }
+  }
+
+  def equals(edgeA: Edge, edgeB: Edge): Boolean = {
+    ((edgeA.string == edgeB.string)
+      && OptionUtil.optionEqualsMax[Node](equals)(edgeA.target, edgeB.target))
+  }
+
+  def equals(treeA: Node, treeB: Node): Boolean = {
+    val keysA = treeA.outEdges.keySet
+    val keysB = treeB.outEdges.keySet
+
+    def eq(c: Char): Boolean = {
+      val edgeA = treeA.outEdges(c)
+      val edgeB = treeB.outEdges(c)
+      equals(edgeA, edgeB)
+    }
+
+    (keysA.subsetOf(keysB) && keysB.subsetOf(keysA)
+      && keysA.forall(eq))
+  }
+}
 
 
 object NaiveReference extends App

@@ -122,7 +122,7 @@ object StringFactorLinearTimeAlgorithm extends StringFactorAlgorithm {
     // Without Ukkonen or other linear time algorithm, this is not linear time!
 
     // val scoreTree = new UkkonenDriver[ScoreNode].suffixTree(termString, builder)
-    val scoreTree = new NaiveSuffixTreeDriver[ScoreNode].suffixTree(termString, builder)
+    val scoreTree = NaiveSuffixTreeDriver.suffixTree(termString, builder)
 
     //println(scoreTree)
     //println(scoreTree.debugTree(string))

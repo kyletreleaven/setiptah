@@ -78,7 +78,8 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
 
   ///*
   test("Particular string of a's and b's does not crash.") {
-    suffixTree("aaabaaaaba$")
+    //suffixTree("aaabaaaaba$")
+    suffixTree("AACAAA$")
     // TODO(ktreleav): Show the graph.
   }
   // */
@@ -133,7 +134,7 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
 
   test("Fuzz test against reference implementation.") {
 
-    def seq = (0 until 100).map( _ => randomString(10) )
+    def seq = (0 until 10000).map( _ => randomString(6) )
 
     for ( str_ <- seq ) {
       val str = str_ + '$'

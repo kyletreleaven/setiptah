@@ -4,7 +4,7 @@
 package setiptah.suffixtree.algorithms
 
 import setiptah.suffixtree.SuffixTrees._
-import setiptah.suffixtree.Util.Range
+import setiptah.hackerrank.strings.StringUtil.Range
 
 // Ukkonen's algorithm in scala, from http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english
 
@@ -37,6 +37,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
   /** Splits an edge after activeLength characters to create a "tee".
     * One branch maintains the subtree of the original edge.
     * The other branch starts a subtree from position newIndex in string.
+    * TODO(ktreleav): Manage suffix edges...
     * Returns the new terminal node of the new edge.
     */
   def splitEdge(activeLength: Int,
@@ -117,7 +118,7 @@ object Ukkonen extends SuffixTreeAlgorithm {
               def splitAction(): Node = {
                 // do a split! does the newNode get used?
                 val newNode = splitEdge(activeLength, index, string)(edge)
-                // connect from any previously inserted node
+                // connect from any previously inserted node --- foreach for Option is "where not None"
                 prefixNode.foreach( _.suffixEdge = Some(new SuffixEdge(newNode)) )
 
                 // setup the next iteration

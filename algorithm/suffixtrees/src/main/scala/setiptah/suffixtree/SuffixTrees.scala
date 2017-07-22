@@ -1,5 +1,6 @@
 package setiptah.suffixtree
 
+import scala.collection.mutable
 import scala.collection.mutable.HashMap
 
 object SuffixTrees {

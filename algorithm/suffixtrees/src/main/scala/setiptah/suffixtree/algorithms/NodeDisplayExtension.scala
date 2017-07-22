@@ -1,7 +1,7 @@
 package setiptah.suffixtree.algorithms
 
-import setiptah.suffixtree.DisplayNode
 import setiptah.suffixtree.SuffixTrees.{Edge, Internal, Leaf, Node}
+import setiptah.suffixtree.util.DisplayNode
 
 /**
   * Created by ktreleav on 7/16/2017.

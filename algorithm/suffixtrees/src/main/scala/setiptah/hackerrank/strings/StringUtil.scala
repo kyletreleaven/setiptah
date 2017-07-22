@@ -1,10 +1,10 @@
-package setiptah.suffixtree
+package setiptah.hackerrank.strings
 
 /**
   * Created by horus on 1/10/2017.
   */
 
-object Util {
+object StringUtil {
   implicit class StringHelper(string: String) {
     def lastIndex: Int = string.length() - 1
   }

@@ -1,6 +1,6 @@
 package setiptah.suffixtree.algorithms
+import setiptah.hackerrank.strings.StringUtil
 import setiptah.suffixtree.SuffixTrees._
-import setiptah.suffixtree.Util
 
 import scala.collection.mutable
 /**
@@ -132,7 +132,7 @@ object NaiveReference extends App
   }
 
   override def main(args: Array[String]): Unit = {
-    for ( s <- Util.suffixes("hello") ) {
+    for ( s <- StringUtil.suffixes("hello") ) {
       println(s)
     }
   }

@@ -1,6 +1,7 @@
 package setiptah.suffixtree.algorithms
 
-import setiptah.suffixtree.DisplayNode
+import setiptah.suffixtree.DisplayNodeUtil
+import setiptah.suffixtree.util.DisplayNodeUtil
 
 /**
   * Created by horus on 1/14/2017.
@@ -71,9 +72,9 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
     println(display.readable(string))
 
     val tree_graph = display.graphmap(string)
-    println( flatten(tree_graph) )
+    println( DisplayNodeUtil.flatten(tree_graph) )
 
-    writeDotGraph(tree_graph)
+    DisplayNodeUtil.writeDotGraph(tree_graph)
   }
 
   ///*
@@ -83,32 +84,6 @@ class SuffixTreesTest extends org.scalatest.FunSuite {
     // TODO(ktreleav): Show the graph.
   }
   // */
-
-  def flatten(node: DisplayNode): List[DisplayNode] = {
-    List(node) ++ node.edges.values   .flatMap( flatten )
-  }
-
-  def listEdges(node: DisplayNode): Unit = {
-    val nodes = flatten(node)
-    val nodeMap = nodes.zipWithIndex   .toMap
-
-    for (i: DisplayNode <- nodes; (e: String,j: DisplayNode) <- i.edges ) {
-      println("%d -(%s)->%d".format(nodeMap(i), e, nodeMap(j)))
-    }
-  }
-
-  def writeDotGraph(node: DisplayNode): Unit = {
-    val nodes = flatten(node)
-    val nodeMap = nodes.zipWithIndex   .toMap
-
-    println("digraph MYGRAPH{")
-    for (i: DisplayNode <- nodes; (e: String,j: DisplayNode) <- i.edges ) {
-      //println("%d -(%s)->%d".format(nodeMap(i), e, nodeMap(j)))
-      println("\t%d -> %d [label=\"%s\"]".format(nodeMap(i), nodeMap(j), e))
-    }
-    println("}")
-  }
-
 
   // how would we test: Every internal node is associated with a suffix link? Is that supposed to be true?
 

@@ -1,6 +1,5 @@
 package setiptah.suffixtree.algorithms
 
-import setiptah.suffixtree.DisplayNodeUtil
 import setiptah.suffixtree.util.DisplayNodeUtil
 
 /**

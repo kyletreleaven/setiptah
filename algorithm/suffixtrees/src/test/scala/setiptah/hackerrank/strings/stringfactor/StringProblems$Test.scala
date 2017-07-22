@@ -35,7 +35,6 @@ class StringProblems$Test extends FunSuite {
   }
 
   test("testBestScore") {
-
     refAssert("aaabaaaaba")
   }
 

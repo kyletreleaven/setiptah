@@ -6,4 +6,7 @@
 			[x] and pulled into a lower-level utility module
 
 
+[ ] Match points (walking distances) over a real, interactive Google map
+	[ ] rendering...
+
 # An app with forms to edit/update the query

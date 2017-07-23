@@ -4,6 +4,8 @@ import euclidean_roadmap
 # import json?
 
 class RoadMatchInstance(object):
+	"""Data representation of an instance of Roadmap matching with conversions between JSON and instance tuple.
+	"""
 
 	@classmethod
 	def from_json(cls, json):
@@ -64,6 +66,8 @@ class RoadMatchInstance(object):
 
 
 class RoadMatchInstanceEuclidean(object):
+	"""Data representation of Euclidean matching instance with conversions between JSON and instance tuple.
+	"""
 
 	@classmethod
 	def from_json(cls, json):

@@ -1,4 +1,4 @@
-package setiptah.hackerrank.strings
+package setiptah.util
 
 /**
   * Created by horus on 1/10/2017.

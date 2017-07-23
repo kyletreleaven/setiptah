@@ -1,6 +1,6 @@
 package setiptah.suffixtree.algorithms
-import setiptah.hackerrank.strings.StringUtil
 import setiptah.suffixtree.SuffixTrees._
+import setiptah.util.StringUtil
 
 import scala.collection.mutable
 /**

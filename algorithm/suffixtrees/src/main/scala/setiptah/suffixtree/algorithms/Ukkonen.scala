@@ -4,7 +4,7 @@
 package setiptah.suffixtree.algorithms
 
 import setiptah.suffixtree.SuffixTrees._
-import setiptah.hackerrank.strings.StringUtil.Range
+import setiptah.util.StringUtil.Range
 
 // Ukkonen's algorithm in scala, from http://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english
 

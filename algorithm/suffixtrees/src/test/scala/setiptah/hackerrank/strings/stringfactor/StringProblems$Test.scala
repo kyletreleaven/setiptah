@@ -9,10 +9,6 @@ class StringProblems$Test extends FunSuite {
 
   import setiptah.suffixtree.algorithms
 
-  test("UkkonenMakeTree") {
-    algorithms.Ukkonen.suffixTree("aaabaaaaba$")
-  }
-
   def refAssert(string: String) = {
     val expected = StringFactorReferenceAlgorithm.score(string)
     val result = StringFactorLinearTimeAlgorithm.score(string)

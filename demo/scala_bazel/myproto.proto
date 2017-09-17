@@ -1,0 +1,4 @@
+
+message Message {
+  string message = 1;
+}

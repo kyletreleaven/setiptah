@@ -1,3 +1,6 @@
 
 #
 *.pyc
+
+# Bazel workspace artifacts
+bazel-*

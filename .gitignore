@@ -4,3 +4,6 @@
 
 # Bazel workspace artifacts
 bazel-*
+
+# backup
+*~

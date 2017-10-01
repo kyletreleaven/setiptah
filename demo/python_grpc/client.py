@@ -10,11 +10,15 @@ channel = grpc.insecure_channel('localhost:50051')
 # create a stub (client)
 stub = calculator_pb2_grpc.CalculatorStub(channel)
 
+
+import sys
+n = float(sys.argv[1])
+
 # create a valid request message
-number = calculator_pb2.Number(value=16)
+number = calculator_pb2.Number(value=n)
 
 # make the call
 response = stub.SquareRoot(number)
 
-# et voilà
+# et voila
 print(response.value)

@@ -1,0 +1,1151 @@
+\documentclass[12pt]{beamer}
+\usetheme{Rochester}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{makecmds}
+\usepackage{movie15}
+
+\usepackage{subfigure}
+\usepackage{caption}
+
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\graphicspath{{../pic/}}
+
+\author{Kyle Treleaven}
+\title{
+State-space, Equilibria, and Stability and Lyapunov Methods I \\
+(Lunch \& Learn)
+}
+%\setbeamercovered{transparent} 
+%\setbeamertemplate{navigation symbols}{} 
+%\logo{} 
+%\institute{} 
+\date{Friday, Jan.~9, 2015} 
+\subject{Lunch \& Learn} 
+
+\usefonttheme[onlymath]{serif}
+
+% typesetting
+\makecommand{\vitem}{\vfill\item}
+
+% general math
+\makecommand{\reals}{{\mathbb R}}
+\makecommand{\timederiv}{\frac{d}{dt}}
+\makecommand{\onehalf}{\frac{1}{2}}
+\makecommand{\xpose}{{\rm T}}
+\makecommand{\vecnorm}[1]{\left\|#1\right\|}
+
+% specific math
+\makecommand{\zerovec}{{\bf 0}}
+
+\makecommand{\vecu}{{\bf u}}
+\makecommand{\vecx}{{\bf x}}
+\makecommand{\matA}{{\bf A}}
+\makecommand{\matC}{{\bf C}}
+\makecommand{\vectheta}{{\boldsymbol\theta}}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+
+\end{frame}
+
+%\begin{frame}
+%\tableofcontents
+%\end{frame}
+
+
+
+
+\section{State-space}
+
+
+\begin{frame}
+\vfill
+\centering
+{\Large State Space: Redux}
+\vfill\null
+\end{frame}
+
+
+\begin{frame}
+%\frametitle{State-space Philosophy}
+\centering
+\vfill
+%\includegraphics[width=.6\linewidth]{tennis-ball-650x487.jpeg}
+\includegraphics[width=.6\linewidth]{airball.jpg}
+
+Where's the ball going to go?
+\vfill\null
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{State-space Philosophy}
+
+\begin{itemize}
+
+\vitem Clearly, position is not all the information that is needed to determine trajectory.
+
+\vitem But, the ball couldn't do just anything; only certain kinds of trajectories are possible.
+
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{State-space Philosophy}
+%(1. Draw many possible trajectories of a bouncing ball)
+
+\begin{columns}
+
+\column{.6\linewidth}
+\centering
+\includegraphics[width=\linewidth]{bouncing_ball_flat}
+
+Infinitely many trajectories of a ball
+
+(under influence of gravity)
+
+\column{.35\linewidth}
+\centering
+\includegraphics[width=\linewidth]{pink.png}
+
+(But not arbitrary)
+
+\end{columns}
+
+%\begin{block}{Problem}
+%may exhibit many trajectories possbile from a particular location, of a bouncing ball under gravity.
+%\end{block}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Idealized Bouncing Ball Model}
+
+\begin{block}{Continuous dynamics}
+\begin{itemize}
+\vitem
+$\ddot y = -g$ (free fall), where:
+\vitem
+$\ddot y = \frac{d^2}{dt^2} y(t)$ (acceleration)
+\vitem
+...also, $\dot y = \timederiv y(t)$ (velocity)
+\end{itemize}
+\end{block}
+
+\begin{block}{``Jump'' dynamics}
+\begin{itemize}
+\vitem
+Whenever $x = 0$ and $\dot x < 0$
+
+\vitem
+Then, (bounce)
+\[
+\begin{cases}
+x^+ = x	\\
+\dot x^+ = -\gamma \dot x
+\end{cases}
+\]
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Bouncing Ball Trajectories (Solution)}
+\fontsize{10pt}{7.2}\selectfont
+\begin{itemize}
+\vitem
+Trajectory during initial \emph{free-fall} \\
+$y(t) = y(0) + \dot y(0) \, t - \onehalf \ g \, t^2$
+
+\vitem
+Time of the initial bounce \\
+$t_0 = g^{-1} \left( \dot y(0) + \sqrt{ 2g \, y(0) + \dot y^2(0)} \right)$
+
+\vitem
+Velocity immediately \emph{after} $k$-th bounce \\
+$\dot y(t_k^+) = \gamma^k \sqrt{ 2g \, y(0) + \dot y^2(0) }$
+
+\vitem
+Time of each subsequent bounce \\
+$t_k = t_0 + (2/g) \ \dot y(t_0^+) \ [1-\gamma^k ]/(1-\gamma)$
+
+\vitem Trajectory during $(k+1)$-th \emph{free-fall} \\
+$y(t) = \dot y(t_k^+) \ t' - \onehalf \ g \, t'^2$ \hfill (for $t_k \leq t < t_{k+1}$, $t' = t - t_k$)
+
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+
+\centering
+\emph{Trajectories determined by $y(0)$ and $\dot y(0)$ \emph{alone}!}
+
+\includegraphics[width=.7\linewidth]{bouncing_ball_flat}
+
+$y(0)=1$, $\dot y(0)$ various
+
+\end{frame}
+
+
+
+
+\begin{frame}[label=ballspace]
+\frametitle{A Bouncing Ball ``State-Space''}
+\begin{itemize}
+%\vitem Associating a ``velocity'' with the ball gives enough information to determine the future trajectory.
+
+\vitem $(y(t),\dot y(t))$, combination of position and velocity,
+\emph{provides enough information to determine the whole future(s)}.
+
+\vitem ...essential unit of information we call \emph{state}.
+
+%\vitem Every possible trajectory can be recovered using some \emph{initial condition} $x_0$.
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+\begin{frame}
+\vfill\centering
+\includegraphics[width=.9\linewidth]{bouncing_ball_deflattened}
+\vfill\null
+\end{frame}
+\begin{frame}
+\vfill\centering
+\includegraphics[width=.9\linewidth]{bouncing_ball_deflattened2}
+\vfill\null
+\end{frame}
+\begin{frame}
+\vfill\centering
+\includegraphics[width=.9\linewidth]{bouncing_ball_reflattened}
+\vfill\null
+\end{frame}
+
+
+\againframe{ballspace}
+
+
+\begin{frame}
+\frametitle{Motivating a General Approach}
+
+\begin{itemize}
+
+\vitem We begin observing a signal,
+\[
+y(t) \in \reals.
+\]
+
+%\vitem We call the present moment $t=0$, and are interested in $y(t)$ over $t \geq 0$ (future).
+
+%\vitem Many trajectories are possible, but there are ``dynamical constraints''.
+
+\vitem Try to substitute another signal $\vecx(t) \in \reals^d$, and
+functions $f : \reals^d \to \reals^d$ and $g : \reals^d \to \reals$:
+
+\begin{enumerate}
+\vitem The system
+\[
+\begin{cases}
+	\dot \vecx = f(\vecx) \\
+	\vecx(0) = \vecx_0 \qquad \text{initial condition}
+\end{cases}
+\]
+has a unique solution over $t \geq 0$;
+
+\vitem recover original signal over $t \geq 0$, by $y(t) = g( x(t) )$ 
+
+%In other words, applying $g$ to the state-trajectory recovers the desired signal.
+
+\end{enumerate}
+
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Review of Last Time: Spring-Mass-Damper}
+
+\begin{center}
+\includegraphics[width=.3\linewidth]{spring-mass-damper.png}
+\end{center}
+
+\begin{block}{Second-order, Linear Dynamical System}
+%$u(t)$ describes the position of a mass over time.
+%$m \ddot x = -k x - c \dot x$, or
+\begin{itemize}
+\vitem
+$\ddot x = -(k/m) x - (c/m) \dot x$
+	
+\vitem
+where $\dot x = \timederiv x(t)$ (velocity), $\ddot x = \frac{d^2}{dt^2} x(t)$ (acceleration).
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Linear State-space Model}
+
+\begin{itemize}
+\vitem
+We wrote 
+$\vecx(t) = \left( x(t), \dot x(t) \right)^\xpose$;
+also written, 
+$\vecx = \begin{pmatrix} x \\ \dot x \end{pmatrix}$;
+
+\vitem
+We re-wrote the differential equation as
+{\small
+\[
+\dot \vecx
+	= \begin{pmatrix} \dot x \\ \ddot x \end{pmatrix}
+	= \begin{pmatrix}
+		\dot x \\
+		-(k/m) x - (c/m) \dot x
+		\end{pmatrix}
+	= \begin{pmatrix} 0 & 1 \\ -k/m & -c/m \end{pmatrix}
+	\vecx
+\]
+}
+\end{itemize}
+
+%(Element-wise derivative)
+%
+%$\dot\vecu
+%	\doteq \timederiv \vecu(t)
+%	= ( \timederiv u(t), \timederiv \dot u(t) )^\xpose
+%	= \begin{pmatrix}
+%		\dot u \\
+%		\ddot u
+%	\end{pmatrix}$.
+
+\begin{block}{State-space Model, Spring-Mass-Damper}
+\[
+\matA := \begin{pmatrix} 0 & 1 \\ -k/m & -c/m \end{pmatrix}
+\qquad \implies
+\dot{\vecx} = \matA \vecx
+\]
+\end{block}
+
+\end{frame}
+
+
+
+
+
+\makecommand{\doequil}{\includegraphics[width=1cm]{equilibrium.jpg}}
+
+
+\section{Equilibria}
+
+\begin{frame}
+\vfill
+\centering
+
+\begin{tabular}{ccccccc}
+%& & \doequil & & \doequil \\
+&\doequil & & & \doequil & \doequil & \\
+& \doequil & & {\Large EQUILIBRIA} & \doequil & & \\
+& &\doequil &\doequil & & \doequil & \\
+%& &\doequil & & \\
+\end{tabular}
+
+\vfill\null
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Equilibria}
+
+\begin{itemize}
+
+\vitem \emph{Equilibria} are conditions such that the system ``stays put''.
+
+\vitem Given a state-space $X$, the equilibria are 
+\[
+\left\{
+	\vecx : \ f(\vecx) = \zerovec \implies \dot \vecx = \zerovec
+\right\}
+\]
+
+\vitem Where in the wide, wide state-space will the system rest?
+
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}
+
+\centering
+\emph{Equilibrium for the bouncing ball?}
+
+\includegraphics[width=.7\linewidth]{bouncing_ball_flat}
+
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Ideal Pendulum System}
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{Simple_gravity_pendulum.png}
+\end{center}
+
+\begin{block}{Continuous Dynamics}
+\centering
+$l \, \ddot\theta + g \sin(\theta) = 0$
+\end{block}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Pendulum State-space}
+
+\begin{columns}
+\column{.6\linewidth}
+
+\begin{itemize}
+
+\vitem
+Use angle and angular velocity as a state-space:
+$\vectheta = (\theta, \dot \theta)^\xpose$
+
+\vitem
+$f(\vectheta)
+	= \begin{pmatrix}
+		\dot\theta \\
+		-(g/l) \sin(\theta)
+	\end{pmatrix}$.
+%$g > 0$ (thanks, universe), so:
+
+\vitem Therefore, stationary when
+\[
+\begin{cases}
+\dot\theta = 0 \\
+\sin \theta = 0
+\end{cases}
+\]
+
+\end{itemize}
+\vfill\null
+
+\column{.4\linewidth}
+
+\includegraphics[width=\linewidth]{Simple_gravity_pendulum.png}
+
+\end{columns}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Equilibria of the Pendulum}
+
+Two [physically] distinct equilibria:
+
+\begin{columns}
+
+\column{.45\linewidth}
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{Pendulum_0deg.png}
+
+$\dot\theta = 0$, $\theta=0$
+
+\end{center}
+
+
+\column{.45\linewidth}
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{Pendulum_180deg.png}
+
+$\dot\theta = 0$, $\theta=\pi$
+\end{center}
+
+
+\end{columns}
+
+\vfill
+\emph{But we have a gut feeling that only one of these equilibria is ``stable''.}
+
+\end{frame}
+
+
+
+
+
+
+
+
+\section{Stability}
+
+
+\begin{frame}
+\vfill
+\centering
+{\Large STABILITY}
+\vfill\null
+\end{frame}
+
+
+
+\subsection{Introduction and Definition}
+
+
+
+
+\begin{frame}
+\frametitle{Stability}
+
+\begin{itemize}
+
+\vitem Stability is a property of \emph{equilibria}, \emph{not} systems!
+
+\vitem Stability of ``systems'' is a colloquialism which arose because of the importance of \emph{linear} systems;
+
+\vitem ...they tend to have unique equilibrium;
+
+\vitem But, it doesn't make any sense to ask \emph{``Is the pendulum stable?''}
+
+\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Lyapunov Stability}
+\vfill
+\begin{block}{Informal}
+``If I put it there, and then I go make a sandwich, will it be like that when I get back?''
+---Kyle
+\end{block}
+
+\vfill
+\begin{block}{Formal}
+An equilibrium $\bar\vecx$ is said to be \textbf{stable in the sense of Lyapunov} if:
+for every $\epsilon > 0$, there is $\delta >0$, so that
+if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
+$\vecnorm{\vecx(t) - \bar\vecx} < \epsilon$. 
+\end{block}
+
+\vfill\null
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Break-down}
+
+\begin{block}{Formal}
+$\bar\vecx$ is \textbf{stable in the sense of Lyapunov} if
+\emph{for every $\epsilon > 0$}, there is $\delta >0$, so that
+$\vecnorm{\vecx(0)-\bar\vecx} < \delta
+ \implies \vecnorm{\vecx(t) - \bar\vecx} < \epsilon$. 
+\end{block}
+
+\begin{tabular}{rp{.6\linewidth}}
+$\vecnorm{\vecx(0)-\bar\vecx}$
+	& Initial distance from the equilibrium state \\ \\
+	
+$\vecnorm{\vecx(t)-\bar\vecx}$
+	& Distance from the equilibrium state at time $t$ \\ \\
+	
+$\vecnorm{\vecx(0)-\bar\vecx} < \delta$
+	& Start close; then... \\ \\
+
+$\implies \vecnorm{\vecx(t)-\bar\vecx} \leq \epsilon$
+	& Stay close (for all $t \geq 0$). \\
+
+\end{tabular}
+
+\vfill\null
+
+\end{frame}
+
+
+
+
+
+
+\subsection{Direct Method}
+
+\begin{frame}
+\frametitle{Lyapunov's Second (``Direct'') Method}
+
+\begin{itemize}
+\vitem
+It can be challenging, tedious, or impossible
+to prove such claims about ``all trajectories'';
+even to \emph{find} them (pendulum!).
+
+\vitem
+...even to find them; e.g., 
+\emph{there is no formula (!!!) for the pendulum trajectories in terms of simpler function.}
+
+\vitem
+Lyapunov's ``direct'' method can provide a short-cut.
+(State-space comes to the rescue again.)
+
+\end{itemize}
+
+\vfill\null
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\begin{itemize}
+\vitem
+Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
+\end{itemize}
+
+\begin{center}
+\includegraphics[width=.9\linewidth]{smd_V}
+\end{center}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\begin{columns}
+\column{.45\linewidth}
+\centering
+\includegraphics[width=\linewidth]{smd_trajectory}
+
+$\vecx(t)$, a state-space trajectory of the Spring-Mass-Damper system
+
+\column{.45\linewidth}
+\centering
+\includegraphics[width=1\linewidth]{smd_Vtraj}
+
+$V(\vecx(t))$
+
+\end{columns}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\centering
+$V(\vecx(t))$
+
+\includegraphics[width=.8\linewidth]{smd_Vt}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Restriction Sets}
+\begin{figure}
+\subfigure[$V(\vecx) \leq 1$]{ \includegraphics[width=.35\linewidth]{sublevel_one} }
+\subfigure[$V(\vecx) \leq 1/2$]{ \includegraphics[width=.35\linewidth]{sublevel_half} }
+\subfigure[$V(\vecx) \leq 1/4$]{ \includegraphics[width=.35\linewidth]{sublevel_quarter} }
+\subfigure[$V(\vecx) \leq 1/10$]{ \includegraphics[width=.35\linewidth]{sublevel_tenth} }
+\end{figure}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Functions of State}
+
+\begin{itemize}
+\vitem
+Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar ``state'' function.
+
+\vitem
+Let $V(t) = V(\vecx(t))$
+
+\vitem
+\[
+\begin{aligned}
+\dot V(t) \doteq
+\timederiv V(\vecx(t))
+	&= \frac{\partial V}{\partial \vecx} (\vecx(t)) \times \frac{d\vecx}{dt}	\\
+	&= \nabla_\vecx V(\vecx(t)) \cdot \dot\vecx	\\
+	&= \nabla_\vecx V(\vecx(t)) \cdot f(\vecx(t))	\\
+%	&\doteq \dot V(\vecx(t)).
+\end{aligned}
+\]
+
+\vitem $\dot V$ is \emph{also} a function of \emph{state}; and,
+
+\vitem Depends only on $V$ and $f$
+
+\end{itemize}
+\vfill\null
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Lyapunov Theorems}
+
+\begin{itemize}
+
+%\vitem
+%Let $V : \reals^d \to \reals$ be a \emph{continuous}, scalar function.
+
+\vitem
+$V$ is a Lyapunov candidate if \emph{positive-definite}, i.e.,
+
+\[
+\begin{cases}
+	V(\zerovec) = 0 &\\
+	V(\vecx) > 0 & \text{for all $\vecx \neq \zerovec$}.
+\end{cases}
+\]
+
+\vitem
+May be positive definite \emph{locally}; i.e., in a ``neighborhood''
+(open set, containing $\zerovec$)
+
+\vitem
+(Assuming \emph{without loss of generality} that $\bar{\vecx} = \zerovec$.)
+
+\vitem $\dot V(\vecx) \leq 0$ for all $\vecx$, then $\zerovec$ is stable i.s.L.
+
+\end{itemize}
+\vfill\null
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{A Lyapunov Function for the Pendulum}
+
+\begin{columns}
+\column{.6\linewidth}
+
+\[
+E = mgh + \onehalf m v^2.
+\]
+
+\[
+h = l(1-\cos\theta)
+\]
+
+\[
+v = (l\dot\theta)^2
+\]
+
+\[
+E
+%ml \, g(1-\cos\theta) + \onehalf ml^2 \, \dot\theta^2
+	= ml \left( g \, (1-\cos\theta) + \onehalf l \, \dot\theta^2 \right)
+\]
+
+\[
+E' = g \, (1-\cos\theta) + \onehalf l \, \dot\theta
+\]
+
+\column{.35\linewidth}
+\includegraphics[width=\linewidth]{Simple_gravity_pendulum.png}
+
+\end{columns}
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\centering
+\includegraphics[width=.9\linewidth]{pendulum_energy}
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Calculating $\dot V$ for the Pendulum}
+
+\[
+\frac{\partial}{\partial\theta} E' = g \sin \theta
+\]
+
+\[
+\frac{\partial}{\partial\dot\theta} E' = l \dot\theta
+\]
+
+\[
+\dot E' =
+	\frac{\partial}{\partial\theta} E' 
+		\times f_{\theta}(\vectheta)
+	+ \frac{\partial}{\partial\dot\theta} E'
+		\times f_{\dot\theta}(\vectheta)
+\]
+
+\[
+\dot E' =
+	\left( g \sin\theta \times \dot\theta \right)
+	+ \left( l \dot\theta \times (-g/l) \sin \theta \right) = 0
+\]
+
+\begin{itemize}
+\vitem
+Proof that the bottom equilibrium is stable i.s.L.;
+
+\end{itemize}
+
+\vfill\null
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Other Properties of Equilibria}
+
+\begin{block}{Attractive}
+If there is $\delta > 0$ so that if $\vecnorm{\vecx(0)-\bar\vecx} < \delta$, then
+$\vecnorm{\vecx(t)-\bar{\vecx}} \to 0^+$.
+\end{block}
+
+\begin{block}{\emph{Asymptotically} Stable}
+Stable in the sense of Lyapunov \emph{and} attractive.
+
+(Attractive does not imply i.s.L.)
+\end{block}
+
+\begin{block}{Exponentially Stable}
+If there are $\alpha, \beta, \delta >0$, so that if
+$\vecnorm{\vecx(0)-\bar{\vecx}} < \delta$, then
+$\vecnorm{\vecx(t)-\bar\vecx}
+	\leq \alpha \vecnorm{\vecx(0)-\bar\vecx} e^{-\beta t}$
+\end{block}
+
+\end{frame}
+
+
+
+
+\begin{frame}
+\frametitle{Discussion}
+
+\begin{itemize}
+
+\vitem Several variations (technical) on the Lyapunov theorem
+
+\vitem
+Unlike trajectories, $V$, $\dot V$ are often obtainable;
+(after all, we have room to choose $V$)
+
+\vitem
+There are methods to prove \emph{instability};
+
+\vitem
+Linear systems are particularly easy to analyze (next time?)
+
+\vitem
+Similar theories for discrete systems (e.g., computer programs);
+hybrid systems (bouncing ball); base on the same concept
+
+\vitem A lot of this material cribbed from
+\url{http://stanford.edu/class/ee363/lectures/lyap.pdf}
+
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+BACKUP
+\end{frame}
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Definiteness}
+
+5. Define and demonstrate [positive/negative] [semi-] definiteness.
+
+(6. Define and demonstrate sub-level sets?)
+
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{SMD Equilibrium}
+
+\begin{itemize}
+\vitem In our example:
+\[
+f(\vecx) = \zerovec \implies
+\begin{cases}
+	\dot u = 0	\\
+	\ddot u = -(k/m) u - (c/m) \dot u = 0
+\end{cases}
+\]
+
+\vitem If $k > 0$, equilibrium of $u = 0$ and $\dot u = 0$ is \emph{unique}.
+
+\vitem If $k = 0$, all $u$ are equilibria when $\dot u = 0$.
+\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+\frametitle{Solution}
+
+\begin{itemize}
+
+\vitem Admits a unique state-space trajectory determined by initial conditions $\vecu(0) = \vecu_0$
+\[
+  \vecu(t) = \vecu_0 e^{t \matA }
+  \qquad t \geq 0.
+\]
+
+\vitem Particle trajectory is given by $u(t) = \matC \vecu(t)$ for $t \geq 0$.
+
+\end{itemize}
+\vfill\null
+
+\end{frame}
+
+
+
+
+\begin{frame}
+Put ``state-space'' locus plots of equilibria in the two cases.
+\end{frame}
+
+
+
+
+
+\begin{frame}
+\frametitle{Stability for LTI Systems (Continuous)}
+
+
+Can I find $P$ and $Q$ which are p.d., n.[s.]d simultaneously?
+
+$\dot x = Ax$
+
+The notation $P > 0$ means that matrix P is positive definite.
+Given any $Q > 0$, there exists a unique $P > 0$ satisfying 
+$A^\xpose P + P A + Q = 0$ if and only if the origin is the globally asymptotically stable equilibrium of the linear system $\dot x = A x$.
+
+If and only if $\lambda \in eig(A) => Re(\lambda) < 0$
+
+The quadratic function $V(z) = z^\xpose P z$ is a Lyapunov function that can verify stability.
+
+\emph{Otherwise, unstable!}
+
+\end{frame}
+
+
+
+
+
+
+\makecommand{\matJ}{{\bf J}}
+
+\begin{frame}
+\frametitle{Lyapunov's Indirect Method (Linearization)}
+
+Given $\dot \vecx = f(\vecx)$ and equilibrium $\vecx_e$,
+form system
+
+$\tilde\vecx = \vecx - \vecx_e$
+
+$\dot{\tilde\vecx}
+	= \left.
+		\frac{\partial f }{\partial\vecx} \right|_{\vecx=\vecx_e}
+		\, \tilde\vecx$.
+
+
+
+$\dot V \prec 0$ means stable;
+
+$\dot V \preceq 0$ is undecided;
+
+$\dot \succ 0$, but $\dot V \neq 0$ means unstable;
+
+(Could use this one against the pendulum inverted equilibrium?)
+
+\end{frame}
+
+
+
+
+
+
+
+\begin{frame}
+\frametitle{Rosenbrock-transformed Spring-Mass-Damper}
+
+\begin{equation}
+V = b \left( y - x^{2}\right)
+	\left(
+		-\onehalf a + \frac{b}{2c} \left(k + m\right) \left(- x^{2}{\left (t \right )} + y{\left (t \right )}\right) + 0.5 x{\left (t \right )}\right)
+		+ \left(a - x{\left (t \right )}\right) \left(- 0.5 b \left(- x^{2}{\left (t \right )} + y{\left (t \right )}\right) + \frac{0.5}{c k} \left(a - x{\left (t \right )}\right) \left(c^{2} + k m + m^{2}\right)\right)
+\end{equation}
+
+\begin{equation}
+\dot V = -b^2 \left( y - x^2 \right) - \left( a - x \right)^2
+\end{equation}
+
+\end{frame}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

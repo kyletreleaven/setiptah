@@ -1,5 +1,6 @@
 # Enable Scala rules in the workspace.
-rules_scala_version="031e73c02e0d8bfcd06c6e4086cdfc7f3a3061a8" # update this as needed
+#rules_scala_version="031e73c02e0d8bfcd06c6e4086cdfc7f3a3061a8" # update this as needed
+rules_scala_version="1a856c279afff55dd1a7f10ba99c75a7fa9a3a0a"
 
 http_archive(
              name = "io_bazel_rules_scala",

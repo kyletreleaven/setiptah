@@ -1,4 +1,6 @@
 
+[ ] A rule to build the virtual environment in blaze-out (or wherever) for you outside of source.
+
 [ ] An app to render query to SVG
 	[ ] SVG query takes node positions, not arc lengths!
 		[x] INTERVAL_GRAPH seems like it would make this really easy;

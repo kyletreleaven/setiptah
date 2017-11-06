@@ -1,1 +1,6 @@
+
+# gradle build
+build/*
+
+# TODO(ktreleav): Should not store data with source code.
 data/*

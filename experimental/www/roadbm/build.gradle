@@ -1,0 +1,22 @@
+
+// https://plugins.gradle.org/plugin/com.jetbrains.python.envs
+
+// https://github.com/JetBrains/gradle-python-envs
+
+plugins {
+  id "com.jetbrains.python.envs" version "0.0.19"
+}
+
+envs {
+  bootstrapDirectory = new File(buildDir, 'bootstrap')
+  envsDirectory = new File(buildDir, 'envs')
+
+  //python "envName", "version", [<packages>]
+  // python "python27_12_64", "2.7.12", []
+
+  pypy "pypy2", []
+  
+  // virtualenv "envName" "python" [<packages>]
+  // virtualenv "roadbm", "python27_12_64", ["numpy"]
+  virtualenv "roadbm", "pypy2", ["numpy"]
+}

@@ -1,7 +1,8 @@
 # ================================================================
-# Enable Scala rules in the workspace
+# Enable Scala rules in the workspace;
+# https://github.com/bazelbuild/rules_scala
 # ================================================================
-rules_scala_version="1a856c279afff55dd1a7f10ba99c75a7fa9a3a0a"
+rules_scala_version="25d68d43ff617e073e57ed2654ee9b30a568a0e6" # update this as needed
 
 http_archive(
              name = "io_bazel_rules_scala",
@@ -12,6 +13,10 @@ http_archive(
 
 load("@io_bazel_rules_scala//scala:scala.bzl", "scala_repositories")
 scala_repositories()
+
+# also, "register toolchains"
+load("@io_bazel_rules_scala//scala:toolchains.bzl", "scala_register_toolchains")
+scala_register_toolchains()
 
 # ================================================================
 # Language specific proto rules

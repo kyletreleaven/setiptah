@@ -1,3 +1,6 @@
+# TODO
+
+1. Figure out real-time playback for interactive use.
 
 # Mingus Resources
 

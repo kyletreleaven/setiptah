@@ -1,0 +1,132 @@
+%\documentclass[10pt,a4paper,twocolumn]{article}
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\usepackage{makecmds}
+
+\makecommand{\ie}{i.e.}
+\makecommand{\eg}{e.g.}
+
+
+\title{A model of productivity at the interface with science and engineering}
+\author{Kyle~Treleaven,~Ph.D.}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+I have been a scientist, and I have been an engineer.
+
+\section{Background}
+
+\section{Problem Statement}
+
+\subsection{Terminology}
+
+\makecommand{\naturals}{{\mathbb N}}
+
+\section{A model of productivity in innovative fields}
+
+\makecommand{\statespace}{X}
+\makecommand{\systemfunc}{f}
+
+\makecommand{\actclass}{A}
+\makecommand{\actclasses}{{\mathcal A}}
+\makecommand{\resclass}{R}
+\makecommand{\resclasses}{{\mathcal R}}
+
+\makecommand{\rhist}{h}
+\makecommand{\timevar}{\tau}
+
+The proposed mathematical model of productivity includes two types of objects, namely, \emph{activity classes}, and \emph{asset, or resource, classes}.
+A productivity \emph{dynamics} is the tuple of a set of activity classes $\actclasses$ and a set of resource classes $\resclasses$, \ie~$(\actclasses,\resclasses)$.
+An activity class $\actclass \in \actclasses$ is characterized by a set of \emph{activations}.
+We propose a model for activations meant to capture the dynamics of utilizing assets over time to generate value.
+To represent the unique dynamics of productivity in innovative fields, the model also includes the effects of devoting resources to the generation and refinement of \emph{value-creating activities}, as well as the discount in value of such activities---techniques or technologies---as they age.
+The effects of activation (of an activity) can include the \emph{generation} of new activities, or the \emph{transformation} of activities from one class to another.
+Resource classes do not require characterization beyond identity.
+
+
+\section{Event-based model}
+
+An activation is the pair of a \emph{resource commitment} with an \emph{activation effect}.
+A resource commitment is the tuple of a histogram $\rhist$ over resource classes and a commitment duration $\timevar$, to wit $(\rhist, \tau)$.
+
+
+\section{Discrete-time model}
+
+\section{A continuous model}
+
+\subsection{Simple continuous productivity model}
+
+\makecommand{\genEffort}{x}
+\makecommand{\opprate}{\lambda}
+\makecommand{\oppvalue}{v}
+\makecommand{\oppdecay}{\beta}
+
+\makecommand{\useEffort}{y}
+\makecommand{\horizon}{\tau}
+
+The control in this problem is division of a single unit of effort.
+An effort $\genEffort$ generates new \emph{opportunities} at a continuous rate of $\opprate(\genEffort)$,
+often simply $\opprate\genEffort$.
+A unit of opportunity initially has value $\oppvalue_0$, but
+that value decays exponentially over time, such that
+a unit of opportunity age $t$ has value $\oppvalue_0 e^{-\oppdecay t}$
+for $\oppdecay > 0$.
+%
+The remaining effort $\useEffort$ is spent exploiting existing opportunities.
+Generally, the amount of opportunity exploited per unit time is an increasing, often continuous and perhaps linear function of the effort.
+The most value is derived by spending effort on the freshest (least decayed) opportunities,
+therefore the reward rate can be determined in terms of a ``horizon'' function  $\horizon(\genEffort,\useEffort)$, specifying the maximum age of an active opportunity.
+In the doubly-linear case (i.e., production and exploitation both linear in effort),
+we have simply $\horizon(\genEffort,\useEffort) = \horizon \useEffort / \genEffort$.
+This leads ultimately to the reward function
+%
+\begin{equation}
+R = \int_{t=0}^{\horizon(\genEffort,\useEffort)}
+	\opprate(\genEffort) \, \oppvalue_0 e^{-\oppdecay t} \, dt,
+\end{equation}
+%
+or often simply
+%
+%
+\begin{equation}
+R = \int_{t=0}^{\horizon \useEffort / \genEffort}
+	\opprate \, \genEffort \, \oppvalue_0 e^{-\oppdecay t} \, dt
+\end{equation}
+%
+or
+\begin{equation}
+R = \frac{\opprate \oppvalue_0}{\oppdecay} \genEffort
+\left[
+	1 - \left( e^{-\oppdecay \horizon} \right)^{\useEffort / \genEffort }
+\right].
+\end{equation}
+
+Note that the factor $\oppdecay \horizon$ determines the optimal distribution of a unit of effort.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

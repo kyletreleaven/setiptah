@@ -91,7 +91,6 @@ pip_import(
 load("@pip_grpcio//:requirements.bzl", pip_grpcio_install = "pip_install")
 pip_grpcio_install()
 
-
 # ================================================================
 # Python additional support
 # ================================================================
@@ -104,3 +103,18 @@ git_repository(
   # Why isn't HEAD supported!?
   commit = "74529f1df2178f07d34c72b3d270355dab2a10fc"
 )
+
+# ==============================================
+# Jsonnet support
+# (https://github.com/bazelbuild/rules_jsonnet)
+# ==============================================
+
+git_repository(
+  name = "io_bazel_rules_jsonnet",
+  remote = "https://github.com/bazelbuild/rules_jsonnet.git",
+  #tag = "0.0.3",
+  commit = "b44bf8d76e0702ae06fd5422e8397f8162d7f5ca",
+)
+
+load("@io_bazel_rules_jsonnet//jsonnet:jsonnet.bzl", "jsonnet_repositories")
+jsonnet_repositories()

@@ -53,10 +53,111 @@ The effects of activation (of an activity) can include the \emph{generation} of 
 Resource classes do not require characterization beyond identity.
 
 
+\section{Preliminaries: A dynamic (state-space) model}
+
+\makecommand{\statespace}{{\mathcal X}}
+\makecommand{\statevar}{x}
+\makecommand{\statevec}{{\rm \statevar}}
+\makecommand{\controlvar}{u}
+\makecommand{\controlvec}{{\rm \controlvar}}
+\makecommand{\dynfunc}{f}
+\makecommand{\valuevar}{V}
+\makecommand{\valuerate}{g}
+
+\makecommand{\classvar}{C}
+
+One modeling approach is to employ a pool of activities,
+growing in turn due to the engagement in activity-generating activations.
+%
+There may be several \emph{types} of activities, distinct in the way they evolve over time (their \emph{dynamics}).
+For an activity of type $t$, we can denote the activity state space as $\statespace_t$, and as usual, dynamics are
+$\statevec_+ = \dynfunc(\statevec, \controlvec)$.
+Suppose also that the activity generates value at a rate
+$\valuerate(\statevec, \controlvec)$.
+%
+This problem is closely related to the multi-armed bandit problem, in that
+the control (engagement) of existing activities is resource constrained.
+%
+However, the novelty of our framework is that activities may also create or refine new activities over time.
+%
+(In existing work, the acquisition of new activities is not a function of control.)
+
+\subsection{Simplifying assumptions}
+
+In the sequel we make some simplifying assumptions arising out of practical modeling.
+For example, the business value of an activity is generally simply most sensitive to time---%
+discounted as newer, better techniques/technologies are developed exogenously---%
+and not to the condition ("hygiene") of the resources or procedures that implement that activity.
+In contrast those conditions directly effect the resource requirements, e.g., in time and worker allotment, to engage the activity to produce.
+
+Therefore, we can imagine a partition of the state space into $(\tau, \classvar)$, or
+the simple age, and the current ``class'' of the activity.
+The control in turn can be partitioned into the resource allotments as well as discrete \emph{activation} or mode.  Without loss of generality we can map activations onto classes.  
+
+An activation could be characterized by:
+
+\makecommand{\ratevar}{\lambda}
+\makecommand{\actv}{a}
+\makecommand{\resource}{r}
+\makecommand{\agevar}{\tau}
+
+$\ratevar^V_\actv$ --- starting value rate
+
+$\beta^V_\actv$ --- value decay rate
+
+$\ratevar^\classvar_\actv$ --- creation rate
+
+$\ratevar^{\classvar \to \classvar'}_\actv$ --- refinement rate
+
+$\Omega_{\actv \resource}$ --- activation per-resource ``impedence''; could be time-varying, for example, as technology becomes at first easier, and after harder to exploit as it ages
+
+$\varphi_\actv$ --- activation function,
+mapping resource allocation to activation engagement or \emph{effect}.
+
+Here the density function of engagement of activation $\actv$ is
+\[
+x_\actv(\agevar) = \varphi_\actv\left(
+	\Omega_{\actv \resource^1}^{-1}(\agevar) x_{\actv \resource^1}(\agevar),
+	\Omega_{\actv \resource^2}^{-1}(\agevar) x_{\actv \resource^2}(\agevar),
+	\ldots
+\right).
+\]
+
+The rate of value generation (which we seek to maximize in steady-state equilibrium) is then given by
+\[
+\dot\valuevar_{\actv}
+	= \int_{\agevar} 
+		x_\actv(\agevar) \
+		\ratevar^\valuevar_\actv
+		e^{-\agevar \beta^\valuevar_\actv}
+%		\left(\beta^\valuevar_\actv}\right)^\agevar
+		\, d\tau
+\]
+
+In equilibrium,
+we should have an activity age distribution per activity class of
+\[
+p_{\classvar}(t + \Delta t)[k]
+	= p_{\classvar}(t)[k]
+	+ \Delta t \ \sum_\actv
+		x_\actv[k] 		
+		\left[
+			\ratevar_\actv^\classvar
+			\ {\bf 1}_{k=0}
+		+ \sum_{\classvar'} \ratevar_\actv^{\classvar' \to \classvar}
+		- \sum_{\classvar'} \ratevar_\actv^{\classvar \to \classvar'}
+		\right],
+\]
+where $k$ denotes the $k$th (age) sliver of width $\Delta t$.
+
+
+
 \section{Event-based model}
 
 An activation is the pair of a \emph{resource commitment} with an \emph{activation effect}.
 A resource commitment is the tuple of a histogram $\rhist$ over resource classes and a commitment duration $\timevar$, to wit $(\rhist, \tau)$.
+
+
 
 
 \section{Discrete-time model}
